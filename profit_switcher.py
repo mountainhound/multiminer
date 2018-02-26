@@ -23,7 +23,7 @@ scheduler.add_job(
     func=auto_profit_switch,
     trigger=IntervalTrigger(minutes=30),
     id='Checking Profit',
-    name='Check Profit Every 1 Hours',
+    name='Check Profit Every X Minutes',
     replace_existing=True)
 # Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())
@@ -39,11 +39,13 @@ def mining_mode():
 		return jsonify({"message":"Mode not given or algo not supported"}),400
 
 	if mode is 'auto':
-		main.set_mining_mode(mode)
+		main.profit_flag = True
+		main.profit_switch()
 	elif mode:
 		if mode in main.supported_algos:
 			ret = main.set_mining_mode(mode)
-
+		else:
+			return jsonify({"message":"Algo not supported {}".format(mode), "response":"{}".format(ret)}),200
 	return jsonify({"message":"Mining Mode set to {}".format(mode), "response":"{}".format(ret)}),200
 
 @app.route('/miner_output', methods=['GET'])
