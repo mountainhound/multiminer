@@ -6,7 +6,7 @@ NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr
 
 
 if [[ $1 = "-lyra2rev2" ]]; then
-	./ccminer -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zpool.com:45233 -u $WALLET	-p [c=BTC] -b 4068
+	./ccminer -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zpool.ca:4533 -u $WALLET	-p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-equihash" ]]; then

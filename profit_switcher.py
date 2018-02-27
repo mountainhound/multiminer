@@ -38,14 +38,14 @@ def mining_mode():
 	if mode is None: 
 		return jsonify({"message":"Mode not given or algo not supported"}),400
 
-	if mode is 'auto':
+	if mode.strip().lower() == "auto":
 		main.profit_flag = True
-		main.profit_switch()
+		ret = main.profit_switch()
 	elif mode:
 		if mode in main.supported_algos:
 			ret = main.set_mining_mode(mode)
 		else:
-			return jsonify({"message":"Algo not supported {}".format(mode), "response":"{}".format(ret)}),200
+			return jsonify({"message":"Algo not supported: {}".format(mode)}),200
 	return jsonify({"message":"Mining Mode set to {}".format(mode), "response":"{}".format(ret)}),200
 
 @app.route('/miner_output', methods=['GET'])
@@ -140,7 +140,8 @@ class multiminer():
 			time.sleep(1)
 			self.runningProcess.kill()
 			ret = self.runningProcess.poll()	
-			
+			subprocess.Popen('fuser -k 4068/tcp'.split(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=1)
+			time.sleep(2)
 			self.runningProcess = None
 
 			return ret
@@ -152,6 +153,7 @@ class multiminer():
 			tn.write(b"summary")
 			output = tn.read_all().decode("utf-8")
 			tn.write(b"^]")
+			tn.close()
 
 			print (output)
 			return output
@@ -175,25 +177,22 @@ class multiminer():
 		stat_dict = {}
 		if self.current_algo in self.settings.get('ccminer_algos'):
 			output =  self.ccminer_api_output()
-			output = output.replace(";",",")
-			output = output.replace("=",":")
-			output = output.split(",")
-			print (output)
+			if output:
+				output = output.replace(";",",")
+				output = output.replace("=",":")
+				output = output.split(",")
+				print (output)
 
-			version = output[1][4:]
-			stat_dict['current_miner'] = 'ccminer_{}'.format(version)
-			stat_dict['hashrate'] = float(output[5][4:])
-			stat_dict['hashrate_unit'] = output[5][:3]
-			stat_dict['gpus'] = int(output[4][5:])
-			stat_dict['algo'] = output[3][5:]
-			stat_dict['shares_accepted'] = int(output[6][5:])
-			stat_dict['shares_rejected'] = int(output[7][4:])
-			stat_dict['uptime'] = int(output[14][7:])
-			stat_dict['difficulty'] = int(output[10][5:])
-
-
-			
-			
+				version = output[1][4:]
+				stat_dict['current_miner'] = 'ccminer_{}'.format(version)
+				stat_dict['hashrate'] = float(output[5][4:])
+				stat_dict['hashrate_unit'] = output[5][:3]
+				stat_dict['gpus'] = int(output[4][5:])
+				stat_dict['algo'] = output[3][5:]
+				stat_dict['shares_accepted'] = int(output[6][5:])
+				stat_dict['shares_rejected'] = int(output[7][4:])
+				stat_dict['uptime'] = int(output[14][7:])
+				stat_dict['difficulty'] = float(output[10][5:])
 
 
 			return stat_dict
