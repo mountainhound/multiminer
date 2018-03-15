@@ -41,5 +41,9 @@ if [[ $1 = "-blake2s" ]]; then
 	./ccminer -a blake2s -o stratum+tcp://blake2s.mine.zpool.ca:5766 -u $WALLET -p [c=BTC] -b 4068
 fi
 
+if [[ $1 = "-nist5" ]]; then
+	./ccminer -a nist5 -o stratum+tcp://nist5.mine.zpool.ca:3833 -u $WALLET -p [c=BTC] -b 4068
+fi
+
 
 
