@@ -189,8 +189,8 @@ class multiminer():
 				stat_dict['hashrate_unit'] = output[5][:3]
 				stat_dict['gpus'] = int(output[4][5:])
 				stat_dict['algo'] = output[3][5:]
-				stat_dict['shares_accepted'] = int(output[6][5:])
-				stat_dict['shares_rejected'] = int(output[7][4:])
+				stat_dict['shares_accepted'] = int(output[7][5:])
+				stat_dict['shares_rejected'] = int(output[8][4:])
 				stat_dict['uptime'] = int(output[14][7:])
 				stat_dict['difficulty'] = float(output[10][5:])
 
