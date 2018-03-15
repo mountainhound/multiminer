@@ -198,7 +198,7 @@ class multiminer():
 			return stat_dict
 
 	def run(self):
-		self.app.run()
+		self.app.run(port=5000, host='0.0.0.0',debug = True, use_reloader=False)
 
 
 if __name__ == "__main__":
