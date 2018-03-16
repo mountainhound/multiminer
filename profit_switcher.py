@@ -1,5 +1,5 @@
 from whattomine_api import ProfitCoin
-from flask import Flask, render_template, Response, jsonify, flash, redirect, request, session, abort, send_file, urlfor
+from flask import Flask, render_template, Response, jsonify, flash, redirect, request, session, abort, send_file
 from gevent.wsgi import WSGIServer
 import json
 import subprocess
@@ -14,16 +14,23 @@ logging.basicConfig()
 
 app = Flask(__name__)
 
+@app.route('/auto_profit_switch', methods=['GET'])
 def auto_profit_switch():
 	with app.app_context():
 		ret = main.profit_switch()
-		print ret
+		print (ret)
+		return jsonify({'message':ret})
+
+def request_profit_switch():
+	url = "http://localhost:5000/auto_profit_switch"
+	ret = requests.get(url)
+	print (ret.json())
 
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
-    func=auto_profit_switch,
-    trigger=IntervalTrigger(minutes=30),
+    func=request_profit_switch,
+    trigger=IntervalTrigger(minutes=1),
     id='Checking Profit',
     name='Check Profit Every X Minutes',
     replace_existing=True)
