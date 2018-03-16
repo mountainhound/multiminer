@@ -132,6 +132,7 @@ class multiminer():
 		print ("Mode is not auto")
 		return ("mode is not auto")
 
+
 	def set_mining_mode(self,mining_mode):
 		ret = 0
 		if mining_mode is not self.current_algo or self.runningProcess is None: 
@@ -149,6 +150,7 @@ class multiminer():
 				print ('setting mining mode')
 				
 				self.current_algo = mining_mode
+				output = self.get_miner_output()
 			
 			return output
 
