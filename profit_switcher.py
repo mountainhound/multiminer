@@ -14,30 +14,41 @@ logging.basicConfig()
 
 app = Flask(__name__)
 
-@app.route('/auto_profit_switch', methods=['GET'])
-def auto_profit_switch():
-	with app.app_context():
-		ret = main.profit_switch()
-		print (ret)
-		return jsonify({'message':ret})
 
-def request_profit_switch():
-	url = "http://localhost:5000/auto_profit_switch"
+
+def auto_profit_switch():
+	url = "http://localhost:5000/profit_switch"
+	ret = requests.get(url)
+	print (ret.json())
+
+def miner_output_flush():
+	url = "http://localhost:5000/miner_output?n=20"
 	ret = requests.get(url)
 	print (ret.json())
 
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
-    func=request_profit_switch,
+    func=auto_profit_switch,
+    trigger=IntervalTrigger(minutes=10),
+    id='Checking Profit',
+    name='Check Profit Every X Minutes',
+    replace_existing=True)
+scheduler.add_job(
+    func=miner_output_flush,
     trigger=IntervalTrigger(minutes=1),
     id='Checking Profit',
     name='Check Profit Every X Minutes',
     replace_existing=True)
+
 # Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())
 
-
+@app.route('/profit_switch', methods=['GET'])
+def profit_switch():
+	ret = main.profit_switch()
+	print (ret)
+	return jsonify({'message':ret})
 
 @app.route('/mining_mode', methods=['POST'])
 def mining_mode(): 
@@ -118,6 +129,8 @@ class multiminer():
 				return "Profit Switching to Algo: {}".format(profit_algo)
 			print ("NO ALGO FOUND")
 			return ("NO ALGO FOUND")
+		print ("Mode is not auto")
+		return ("mode is not auto")
 
 	def set_mining_mode(self,mining_mode):
 		ret = 0
@@ -136,7 +149,6 @@ class multiminer():
 				print ('setting mining mode')
 				
 				self.current_algo = mining_mode
-				output = self.get_miner_output()
 			
 			return output
 
