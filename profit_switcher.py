@@ -1,5 +1,6 @@
 from whattomine_api import ProfitCoin
-from flask import Flask, render_template, Response, jsonify, flash, redirect, request, session, abort, send_file
+from flask import Flask, render_template, Response, jsonify, flash, redirect, request, session, abort, send_file, urlfor
+from gevent.wsgi import WSGIServer
 import json
 import subprocess
 import requests,subprocess,shlex,time,datetime,statistics,configparser,sys,re,fcntl,os,random
@@ -16,6 +17,7 @@ app = Flask(__name__)
 def auto_profit_switch():
 	with app.app_context():
 		ret = main.profit_switch()
+		print ret
 
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -198,8 +200,11 @@ class multiminer():
 			return stat_dict
 
 	def run(self):
-		self.app.run(port=5000, host='0.0.0.0',debug = True, use_reloader=False)
 
+		http_server = WSGIServer(('',5000),self.app)
+		http_server.serve_forever()
+
+		#self.app.run(host='0.0.0.0', port = 5001, debug=False, use_reloader=False, threaded=True)
 
 if __name__ == "__main__":
 	main = multiminer(app)
