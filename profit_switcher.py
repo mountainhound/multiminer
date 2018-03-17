@@ -5,11 +5,15 @@ import json
 import subprocess
 import requests,subprocess,shlex,time,datetime,statistics,configparser,sys,re,fcntl,os,random
 from telnetlib import Telnet
+from queue import Queue
+from threading import Thread
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 import logging
 import atexit
+import re
+
 logging.basicConfig()
 
 app = Flask(__name__)
@@ -21,22 +25,11 @@ def auto_profit_switch():
 	ret = requests.get(url)
 	print (ret.json())
 
-def miner_output_flush():
-	url = "http://localhost:5000/miner_output?n=20"
-	ret = requests.get(url)
-	print (ret.json())
-
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
     func=auto_profit_switch,
     trigger=IntervalTrigger(minutes=10),
-    id='Checking Profit',
-    name='Check Profit Every X Minutes',
-    replace_existing=True)
-scheduler.add_job(
-    func=miner_output_flush,
-    trigger=IntervalTrigger(minutes=1),
     id='Checking Profit',
     name='Check Profit Every X Minutes',
     replace_existing=True)
@@ -91,6 +84,7 @@ class multiminer():
 		self.runningProcess = None
 		self.profit_api = ProfitCoin()
 		self.current_algo = self.settings.get('default')
+		self.output_q = Queue(maxsize = 100)
 		ret = None
 		
 		if self.profit_flag:
@@ -132,6 +126,16 @@ class multiminer():
 		print ("Mode is not auto")
 		return ("mode is not auto")
 
+	def output_reader(self,proc, output_q):
+		for line in iter(proc.stdout.readline, b''):
+			if proc is not None and proc.poll() is None: 
+				if output_q.full(): 
+					output_q.get()
+				output_q.put(line.decode('utf-8'))
+				print (line.decode('utf-8'))
+			else:
+				print ("breaking output reader")
+				break
 
 	def set_mining_mode(self,mining_mode):
 		ret = 0
@@ -147,12 +151,15 @@ class multiminer():
 				
 				self.runningProcess=subprocess.Popen(cmd.split(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=1)
 				
+				time.sleep(1)
+				t = Thread(target=self.output_reader, args=(self.runningProcess, self.output_q))
+				t.start()
+				
 				print ('setting mining mode')
 				
 				self.current_algo = mining_mode
-				output = self.get_miner_output()
 			
-			return output
+			return "Mining Mode Set To {}".format(self.current_algo)
 
 		return "Algo already running"
 
@@ -188,7 +195,14 @@ class multiminer():
 		miner_output = []
 		if self.runningProcess:
 			for i in range(n):
-				miner_output.append(str(self.runningProcess.stdout.readline()))
+				if self.output_q.empty():
+					break
+				
+				line = str(self.output_q.get())
+				#Remove trailing newlines and ansi_escape characters
+				ansi_escape = re.compile(r'\x1B\[[0-?]*[ -/]*[@-~]')
+				line = ansi_escape.sub('', line).rstrip()
+				miner_output.append(line)
 			
 			ret['miner_output'] = miner_output
 			ret['current_algo'] = self.current_algo

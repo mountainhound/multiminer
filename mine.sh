@@ -3,7 +3,7 @@
 #WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr.thinkpad
 WALLET=1FCLeN861h7SGSheTBDyBimQMQPNX8QUZX
 NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr
-
+EQUIHASH_WALLET=0x333b5748538B03362f70A1be261599eD963925dC
 
 if [[ $1 = "-lyra2rev2" ]]; then
 	./ccminer -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zpool.ca:4533 -u $WALLET	-p [c=BTC] -b 4068
@@ -12,6 +12,10 @@ fi
 if [[ $1 = "-equihash" ]]; then
 	./ccminer -a equihash -o stratum+tcp://equihash.mine.zpool.ca:2142 -u $WALLET -p [c=BTC] -b 4068
 fi
+
+#if [[ $1 = "-ethash" ]]; then
+#	./ethminer -G -F eth-us-east1.nanopool.org:9999/$EQUIHASH_WALLET.rig --farm-recheck 200
+#fi
 
 if [[ $1 = "-neoscrypt" ]]; then
 	./ccminer -a neoscrypt -o stratum+tcp://neoscrypt.mine.zpool.ca:4233 -u $WALLET -p [c=BTC] -b 4068
