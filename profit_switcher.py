@@ -256,16 +256,16 @@ class multiminer():
 
 		if self.current_algo in self.settings.get('ethash_algos'):
 			output =  self.ethash_api_output()
+			gpu_hashrates = output[3].split(";")
+
 			version = output[0]
 			stat_dict['current_miner'] = 'ethminer_{}'.format(version)
-			stat_dict['hashrate'] = output[2].spit()[0]
+			stat_dict['hashrate'] = output[2].split(";")[0]
 			stat_dict['hashrate_unit'] = "KHS"
-			stat_dict['gpus'] = output[]
-			stat_dict['algo'] = output[3][5:]
+			stat_dict['gpu_num'] = len(gpu_hashrates)
+			stat_dict['gpus'] = gpu_hashrates
+			stat_dict['algo'] = "ethash"
 			stat_dict['shares_accepted'] = output[1]
-			stat_dict['shares_rejected'] = int(output[8][4:])
-			stat_dict['uptime'] = int(output[14][7:])
-			stat_dict['difficulty'] = float(output[10][5:])
 			
 
 		return stat_dict
