@@ -58,6 +58,7 @@ class ProfitCoin(object):
                 coin['coin'] = coin_set[0]
                 # add this coin to the list!
                 coin_list.append(coin)
+                print (coin_list)
         elif self.src=='nicehash':
             pass
         else:

@@ -109,11 +109,16 @@ class multiminer():
 			profit_algo = None
 			profit_coin = None
 			for coin in sorted_list: 
-				if coin.get('algorithm').lower() in self.supported_algos: 
+				algo = coin.get('algorithm').lower().replace(" ","").replace("(","").replace(")","")
+				coin = coin.get('coin').lower().replace(" ","").replace("(","").replace(")","")
+
+				if algo in self.supported_algos: 
 					if not profit_algo and not profit_coin:
-						profit_algo = coin.get('algorithm').lower()
-						profit_coin = coin.get('coin').lower()
-			
+						profit_algo = algo
+						profit_coin = coin
+						if "nicehash" in profit_coin:
+							profit_algo = profit_coin
+							
 			if self.current_algo == profit_algo and sorted_list:
 				print ("Already mining most profitable algo")
 				return "Already mining most profitable algo"
@@ -190,6 +195,19 @@ class multiminer():
 		except:
 			print ("ERROR IN TELNET")
 
+	def ethash_api_output(self):
+		try: 
+			tn = Telnet("localhost","4068")
+			tn.write(b"summary")
+			output = tn.read_all().decode("utf-8")
+			tn.write(b"^]")
+			tn.close()
+
+			print (output)
+			return output
+		except:
+			print ("ERROR IN TELNET")
+
 	def get_miner_output(self,n=10):	
 		ret = {}
 		miner_output = []
@@ -231,6 +249,7 @@ class multiminer():
 				stat_dict['uptime'] = int(output[14][7:])
 				stat_dict['difficulty'] = float(output[10][5:])
 
+		if self.current_algo in self.settings.get('ethash_algos')
 
 			return stat_dict
 
