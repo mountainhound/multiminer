@@ -196,17 +196,22 @@ class multiminer():
 			print ("ERROR IN TELNET")
 
 	def ethash_api_output(self):
-		try: 
-			tn = Telnet("localhost","4068")
-			tn.write(b"summary")
-			output = tn.read_all().decode("utf-8")
-			tn.write(b"^]")
-			tn.close()
+		try:
+			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			s.connect(('micciminer', 4068))
+			s.sendall('{"id":0,"jsonrpc":"2.0","method":"miner_getstat1"}\n'.encode('utf-8'))
+			resp = ''
+			while 1:
+				data = s.recv(4096)
+				resp += data.decode('utf-8')
+				if not data or (len(data) < 4096 and data[-3:] == b']}\n'):
+					break
+			s.close()
+			
+			ret = json.loads().get('result')
 
-			print (output)
-			return output
 		except:
-			print ("ERROR IN TELNET")
+			print ("ERROR IN JSON RPC")
 
 	def get_miner_output(self,n=10):	
 		ret = {}
@@ -249,9 +254,21 @@ class multiminer():
 				stat_dict['uptime'] = int(output[14][7:])
 				stat_dict['difficulty'] = float(output[10][5:])
 
-		if self.current_algo in self.settings.get('ethash_algos')
+		if self.current_algo in self.settings.get('ethash_algos'):
+			output =  self.ethash_api_output()
+			version = output[0]
+			stat_dict['current_miner'] = 'ethminer_{}'.format(version)
+			stat_dict['hashrate'] = output[2].spit()[0]
+			stat_dict['hashrate_unit'] = "KHS"
+			stat_dict['gpus'] = output[]
+			stat_dict['algo'] = output[3][5:]
+			stat_dict['shares_accepted'] = output[1]
+			stat_dict['shares_rejected'] = int(output[8][4:])
+			stat_dict['uptime'] = int(output[14][7:])
+			stat_dict['difficulty'] = float(output[10][5:])
+			
 
-			return stat_dict
+		return stat_dict
 
 	def run(self):
 
