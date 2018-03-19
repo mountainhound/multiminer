@@ -86,6 +86,7 @@ class multiminer():
 		self.current_algo = self.settings.get('default')
 		self.output_q = Queue(maxsize = 100)
 		ret = None
+		subprocess.Popen('fuser -k 4068/tcp'.split(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=1)
 		
 		if self.profit_flag:
 			ret = self.profit_switch()
@@ -249,7 +250,7 @@ class multiminer():
 				stat_dict['hashrate_unit'] = output[5][:3]
 				stat_dict['gpus'] = int(output[4][5:])
 				stat_dict['algo'] = output[3][5:]
-				stat_dict['shares_accepted'] = int(output[7][5:])
+				stat_dict['shares_accepted'] = int(output[7][4:])
 				stat_dict['shares_rejected'] = int(output[8][4:])
 				stat_dict['uptime'] = int(output[14][7:])
 				stat_dict['difficulty'] = float(output[10][5:])
