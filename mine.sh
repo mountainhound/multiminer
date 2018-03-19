@@ -29,6 +29,14 @@ if [[ $1 = "-x11" ]]; then
 	./ccminer -a x11 -o stratum+tcp://x11.mine.zpool.ca:3533 -u $WALLET -p [c=BTC] -b 4068
 fi
 
+if [[ $1 = "-x17" ]]; then
+	./ccminer -a x17 -o stratum+tcp://x17.mine.zpool.ca:3737 -u $WALLET -p [c=BTC] -b 4068
+fi
+
+if [[ $1 = "-x17" ]]; then
+	./ccminer -a x17 -o stratum+tcp://x17.mine.zpool.ca:3737 -u $WALLET -p [c=BTC] -b 4068
+fi
+
 if [[ $1 = "-x11gost" ]]; then
 	./ccminer -o stratum+tcp://x11gost.usa.nicehash.com:3359 -u $NICEHASH_WALLET -p [c=BTC] -b 4068
 fi
@@ -49,5 +57,8 @@ if [[ $1 = "-nist5" ]]; then
 	./ccminer -a nist5 -o stratum+tcp://nist5.mine.zpool.ca:3833 -u $WALLET -p [c=BTC] -b 4068
 fi
 
+if [[ $1 = "-xevan" ]]; then
+	./ccminer -a xevan -o stratum+tcp://xevan.mine.zpool.ca:3739 -u $WALLET -p [c=BTC] -b 4068
+fi
 
 
