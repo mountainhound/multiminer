@@ -13,9 +13,9 @@ if [[ $1 = "-equihash" ]]; then
 	./ccminer -a equihash -o stratum+tcp://equihash.mine.zpool.ca:2142 -u $WALLET -p [c=BTC] -b 4068
 fi
 
-#if [[ $1 = "-ethash" ]]; then
-#	./ethminer -G -F eth-us-east1.nanopool.org:9999/$EQUIHASH_WALLET.rig --farm-recheck 200
-#fi
+if [[ $1 = "-ethash" ]]; then
+	./ethminer -G -S eth-us-east1.nanopool.org:9999/$EQUIHASH_WALLET.rig --farm-recheck 200
+fi
 
 if [[ $1 = "-neoscrypt" ]]; then
 	./ccminer -a neoscrypt -o stratum+tcp://neoscrypt.mine.zpool.ca:4233 -u $WALLET -p [c=BTC] -b 4068
