@@ -65,6 +65,10 @@ if [[ $1 = "-nicehash-decred" ]]; then
 	./ccminer -a decred -o stratum+tcp://decred.usa.nicehash.com:3354 -u $NICEHASH_WALLET -b 4068
 fi
 
+if [[ $1 = "-nicehash-blake14r" ]]; then
+	./ccminer -a decred -o stratum+tcp://decred.usa.nicehash.com:3354 -u $NICEHASH_WALLET -b 4068
+fi
+
 if [[ $1 = "-blake2s" ]]; then
 	./ccminer -a blake2s -o stratum+tcp://blake2s.mine.zpool.ca:5766 -u $WALLET -p [c=BTC] -b 4068
 fi
@@ -88,5 +92,11 @@ fi
 if [[ $1 = "-nicehash-lbry" ]]; then
 	./ccminer -a lbry -o stratum+tcp://lbry.usa.nicehash.com:3356 -u $NICEHASH_WALLET -p [c=BTC] -b 4068
 fi
+
+if [[ $1 = "-xevan" ]]; then
+	./ccminer-xevan -a xevan -o stratum+tcp://blake2s.mine.zpool.ca:3739 -u $WALLET -p [c=BTC] -b 4068
+fi
+
+
 
 

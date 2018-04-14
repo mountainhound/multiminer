@@ -1,4 +1,4 @@
-from whattomine_api import ProfitCoin
+from profit_api import ProfitCoin
 from flask import Flask, render_template, Response, jsonify, flash, redirect, request, session, abort, send_file
 from gevent.wsgi import WSGIServer
 import json
@@ -7,6 +7,7 @@ import requests,subprocess,shlex,time,datetime,statistics,configparser,sys,re,fc
 from telnetlib import Telnet
 from queue import Queue
 from threading import Thread
+import settings
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
@@ -79,11 +80,13 @@ def miner_stats():
 class multiminer():
 	def __init__(self,app):
 		self.setting_path = 'conf.json'
-		self.settings = self.get_settings()
 		self.app = app
+		self.ccminer_algos = settings.ccminer_algos
+		self.ethash_algos = settings.ethash_algos
+		self.profit_flag = settings.profit_flag
 		self.runningProcess = None
 		self.profit_api = ProfitCoin()
-		self.current_algo = self.settings.get('default')
+		self.current_algo = settings.default
 		self.output_q = Queue(maxsize = 100)
 		ret = None
 		subprocess.Popen('fuser -k 4068/tcp'.split(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=1)
@@ -94,15 +97,7 @@ class multiminer():
 			ret = self.set_mining_mode(self.current_algo)
 		
 		print ("Starting Mining:{}".format(ret))
-
-	def get_settings(self):
-		with open(self.setting_path, 'r') as reader:
-			info = reader.readline()
-			settings = json.loads(info)
-			self.supported_algos = settings.get('algos')
-			self.profit_flag = settings.get('profit_flag')
-		print (self.supported_algos)
-		return settings
+		
 
 	def profit_switch(self):
 		if self.profit_flag:
@@ -113,7 +108,7 @@ class multiminer():
 				algo = coin.get('algorithm').lower().replace(" ","").replace("(","").replace(")","")
 				coin = coin.get('coin').lower().replace(" ","").replace("(","").replace(")","")
 
-				if algo in self.supported_algos: 
+				if algo in self.ccminer_algos or self.ethash_algos: 
 					if not profit_algo and not profit_coin:
 						profit_algo = algo
 						profit_coin = coin
@@ -183,10 +178,10 @@ class multiminer():
 			return ret
 		return "No Algo Running"
 
-	def ccminer_api_output(self):
+	def ccminer_api_output(self,command = b"summary"):
 		try: 
 			tn = Telnet("localhost","4068")
-			tn.write(b"summary")
+			tn.write(command)
 			output = tn.read_all().decode("utf-8")
 			tn.write(b"^]")
 			tn.close()
@@ -236,7 +231,7 @@ class multiminer():
 
 	def get_miner_stats(self):
 		stat_dict = {}
-		if self.current_algo in self.settings.get('ccminer_algos'):
+		if self.current_algo in self.ccminer_algos:
 			output =  self.ccminer_api_output()
 			if output:
 				output = output.replace(";",",")
@@ -255,7 +250,10 @@ class multiminer():
 				stat_dict['uptime'] = int(output[14][7:])
 				stat_dict['difficulty'] = float(output[10][5:])
 
-		if self.current_algo in self.settings.get('ethash_algos'):
+				thread_output =  self.ccminer_api_output()
+				thread_output = thread_output.split(";")
+
+		if self.current_algo in settings.ethash_algos:
 			output =  self.ethash_api_output()
 			gpu_hashrates = output[3].split(";")
 
