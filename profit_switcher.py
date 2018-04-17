@@ -38,6 +38,7 @@ def maintenance():
 
 	ret = main.profit_switch(force_switch = restart_flag)
 
+
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
@@ -46,6 +47,7 @@ scheduler.add_job(
     id='Checking Profit',
     name='Check Profit Every X Minutes',
     replace_existing=True)
+
 
 # Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())
@@ -91,6 +93,7 @@ def miner_stats():
 
 class multiminer():
 	def __init__(self,app):
+		print ("INIT")
 		self.setting_path = 'conf.json'
 		self.app = app
 		self.ccminer_algos = settings.ccminer_algos
@@ -101,6 +104,7 @@ class multiminer():
 		self.current_algo = settings.default
 		self.output_q = Queue(maxsize = 100)
 		ret = None
+		print ("Testing")
 		subprocess.Popen('fuser -k 4068/tcp'.split(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=1)
 		
 		if self.profit_flag:
@@ -164,7 +168,7 @@ class multiminer():
 			time.sleep(1)
 
 			if ret < 0 or self.runningProcess is None:
-				cmd = './mine.sh -{}'.format(mining_mode)
+				cmd = 'home/micci/multiminer/mine.sh -{}'.format(mining_mode)
 				
 				self.runningProcess=subprocess.Popen(cmd.split(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=1)
 				
