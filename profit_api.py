@@ -61,6 +61,7 @@ class ProfitCoin(object):
         if self.src is not "nicehash":
             self.json_obj = self.get_json(self.whattomine_url)
             # coins_list = [v for k,v in json_obj['coins'].iteritems()]
+            
             for coin_set in self.json_obj['coins'].items():
                 coin_dict = {}
                 # we want a dict so get the main data
@@ -71,24 +72,26 @@ class ProfitCoin(object):
                 coin_dict['coin'] = coin_set[0]
                 # add this coin to the list!
                 coin_list.append(coin_dict)
-            print (coin_list)
 
         if self.src is not "whattomine":
             self.json_obj = self.get_json(self.nicehash_url)
             algo_list = self.json_obj.get('result').get('simplemultialgo')
-            for algo in algo_list:
-                algo_dict = {}
-                algo_num = algo.get('algo')
-                paying = float(algo.get('paying'))
-                algo_name = nicehash_algos.get(algo_num)
-                algo_hashrate = hashrates.get(algo_name)
-                if algo_hashrate: 
-                    revenue = paying * algo_hashrate
-                    algo_dict['algorithm'] = "nicehash-"+algo_name
-                    algo_dict['coin'] = "nicehash-"+algo_name
-                    algo_dict['btc_revenue'] = revenue
-                    coin_list.append(algo_dict)
-            print (coin_list)
+
+            if algo_list is not None: 
+                for algo in algo_list:
+                    algo_dict = {}
+                    algo_num = algo.get('algo')
+                    paying = float(algo.get('paying'))
+                    algo_name = nicehash_algos.get(algo_num)
+                    algo_hashrate = hashrates.get(algo_name)
+                    if algo_hashrate: 
+                        revenue = paying * algo_hashrate
+                        algo_dict['algorithm'] = "nicehash-"+algo_name
+                        algo_dict['coin'] = "nicehash-"+algo_name
+                        algo_dict['btc_revenue'] = revenue
+                        coin_list.append(algo_dict)
+
+            #print (coin_list)
 
         # sort the list of dicts by the key specified
         sorted_list = sorted(coin_list, key=lambda k:k[self.sort_key], reverse=True)

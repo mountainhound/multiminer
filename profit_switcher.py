@@ -26,11 +26,23 @@ def auto_profit_switch():
 	ret = requests.get(url)
 	print (ret.json())
 
+def maintenance():
+	stats = main.get_miner_stats()
+	restart_flag = False
+	if stats: 
+		hashrate = stats.get('hashrate')
+		if hashrate == 0: 
+			restart_flag = True
+	else: 
+		restart_flag = True
+
+	ret = main.profit_switch(force_switch = restart_flag)
+
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
-    func=auto_profit_switch,
-    trigger=IntervalTrigger(minutes=10),
+    func=maintenance,
+    trigger=IntervalTrigger(minutes=1),
     id='Checking Profit',
     name='Check Profit Every X Minutes',
     replace_existing=True)
@@ -56,7 +68,7 @@ def mining_mode():
 		main.profit_flag = True
 		ret = main.profit_switch()
 	elif mode:
-		if mode in main.supported_algos:
+		if mode in main.ccminer_algos or main.ethash_algos:
 			ret = main.set_mining_mode(mode)
 		else:
 			return jsonify({"message":"Algo not supported: {}".format(mode)}),200
@@ -99,7 +111,7 @@ class multiminer():
 		print ("Starting Mining:{}".format(ret))
 		
 
-	def profit_switch(self):
+	def profit_switch(self,force_switch = False):
 		if self.profit_flag:
 			sorted_list = self.profit_api.most_profitable()
 			profit_algo = None
@@ -114,6 +126,11 @@ class multiminer():
 						profit_coin = coin
 						if "nicehash" in profit_coin:
 							profit_algo = profit_coin
+
+						#Forces a Switch from Current Algo so it will go to the next coin in list
+						if self.current_algo == profit_algo and force_switch:
+							profit_algo = None
+							profit_coin = None
 							
 			if self.current_algo == profit_algo and sorted_list:
 				print ("Already mining most profitable algo")
@@ -143,7 +160,6 @@ class multiminer():
 		if mining_mode is not self.current_algo or self.runningProcess is None: 
 			if self.runningProcess:
 				ret = self.stop_mining()
-
 
 			time.sleep(1)
 
@@ -189,6 +205,7 @@ class multiminer():
 			print (output)
 			return output
 		except:
+			return False
 			print ("ERROR IN TELNET")
 
 	def ethash_api_output(self):
@@ -207,6 +224,7 @@ class multiminer():
 			ret = json.loads().get('result')
 
 		except:
+			return False
 			print ("ERROR IN JSON RPC")
 
 	def get_miner_output(self,n=10):	
@@ -255,17 +273,16 @@ class multiminer():
 
 		if self.current_algo in settings.ethash_algos:
 			output =  self.ethash_api_output()
-			gpu_hashrates = output[3].split(";")
-
-			version = output[0]
-			stat_dict['current_miner'] = 'ethminer_{}'.format(version)
-			stat_dict['hashrate'] = output[2].split(";")[0]
-			stat_dict['hashrate_unit'] = "KHS"
-			stat_dict['gpu_num'] = len(gpu_hashrates)
-			stat_dict['gpus'] = gpu_hashrates
-			stat_dict['algo'] = "ethash"
-			stat_dict['shares_accepted'] = output[1]
-			
+			if output: 
+				gpu_hashrates = output[3].split(";")
+				version = output[0]
+				stat_dict['current_miner'] = 'ethminer_{}'.format(version)
+				stat_dict['hashrate'] = output[2].split(";")[0]
+				stat_dict['hashrate_unit'] = "KHS"
+				stat_dict['gpu_num'] = len(gpu_hashrates)
+				stat_dict['gpus'] = gpu_hashrates
+				stat_dict['algo'] = "ethash"
+				stat_dict['shares_accepted'] = output[1]
 
 		return stat_dict
 
