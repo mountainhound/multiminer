@@ -168,7 +168,7 @@ class multiminer():
 			time.sleep(1)
 
 			if ret < 0 or self.runningProcess is None:
-				cmd = 'home/micci/multiminer/mine.sh -{}'.format(mining_mode)
+				cmd = './mine.sh -{}'.format(mining_mode)
 				
 				self.runningProcess=subprocess.Popen(cmd.split(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=1)
 				
