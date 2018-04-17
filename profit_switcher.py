@@ -42,7 +42,7 @@ scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
     func=maintenance,
-    trigger=IntervalTrigger(minutes=1),
+    trigger=IntervalTrigger(minutes=10),
     id='Checking Profit',
     name='Check Profit Every X Minutes',
     replace_existing=True)
