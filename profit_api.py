@@ -61,7 +61,7 @@ class ProfitCoin(object):
         if self.src is not "nicehash":
             self.json_obj = self.get_json(self.whattomine_url)
             # coins_list = [v for k,v in json_obj['coins'].iteritems()]
-            
+
             for coin_set in self.json_obj['coins'].items():
                 coin_dict = {}
                 # we want a dict so get the main data
@@ -96,7 +96,7 @@ class ProfitCoin(object):
         # sort the list of dicts by the key specified
         sorted_list = sorted(coin_list, key=lambda k:k[self.sort_key], reverse=True)
         self.coin_list = sorted_list
-        print (self.coin_list)
+        #print (self.coin_list)
 
     def most_profitable(self):
         self.get_coin_list()
