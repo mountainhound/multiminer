@@ -5,6 +5,9 @@ WALLET=1FCLeN861h7SGSheTBDyBimQMQPNX8QUZX
 NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr
 EQUIHASH_WALLET=0x333b5748538B03362f70A1be261599eD963925dC
 
+export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
+export PATH=/usr/local/cuda-8.0/bin:$PATH
+
 if [[ $1 = "-lyra2rev2" ]]; then
 	./ccminer -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zpool.ca:4533 -u $WALLET	-p [c=BTC] -b 4068
 fi

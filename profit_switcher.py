@@ -150,12 +150,17 @@ class multiminer():
 
 	def output_reader(self,proc, output_q):
 		for line in iter(proc.stdout.readline, b''):
-			if proc is not None and proc.poll() is None: 
+			if proc is not None:
 				if output_q.full(): 
 					output_q.get()
 				output_q.put(line.decode('utf-8'))
 				print (line.decode('utf-8'))
+				if proc.poll() is not None: 
+					print ("breaking output reader")
+					break
 			else:
+				print ("proc.poll = {}".format(proc.poll()))
+				print ("proc = {}".format(proc))
 				print ("breaking output reader")
 				break
 
@@ -295,7 +300,8 @@ class multiminer():
 		http_server = WSGIServer(('',5000),self.app)
 		http_server.serve_forever()
 
-		#self.app.run(host='0.0.0.0', port = 5001, debug=False, use_reloader=False, threaded=True)
+		#self.app.run(host='0.0.0.0', port = 5000, debug=False, use_reloader=False, threaded=True)
+		#self.app.run(host='0.0.0.0', port = 5000)
 
 if __name__ == "__main__":
 	main = multiminer(app)
