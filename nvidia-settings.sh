@@ -36,7 +36,7 @@ COUNTER=0
 while [  $COUNTER -lt $GPU_NUM ]; do
     nvidia-smi -i $COUNTER -pl $POWER_LIMIT
     nvidia-settings -a [gpu:$COUNTER]/GpuPowerMizerMode=1
-    nvidia-settings -a [gpu:$COUNTER]/GPUMemoryTransferRateOffset[2]=$MEM_OFFSET
-    nvidia-settings -a [gpu:$COUNTER]/GPUGraphicsClockOffset[2]=$GRAPHIC_OFFSET
+    nvidia-settings -a [gpu:$COUNTER]/GPUMemoryTransferRateOffset[3]=$MEM_OFFSET
+    nvidia-settings -a [gpu:$COUNTER]/GPUGraphicsClockOffset[3]=$GRAPHIC_OFFSET
     let COUNTER=COUNTER+1 
 done
