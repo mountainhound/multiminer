@@ -1,6 +1,6 @@
 #!/bin/bash
  
-OPTS=`getopt -o mgpn: --long mem-offset,graphic-offset,power-limit,gpu-num: -n 'parse-options' -- "$@"`
+OPTS=`getopt -o m:g:p:n: --long mem-offset:,graphic-offset:,power-limit:,gpu-num: -n 'parse-options' -- "$@"`
 
 if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 
@@ -14,9 +14,9 @@ GPU_NUM=16
 
 while true; do
   case "$1" in
-    -m | --mem-offset ) MEM_OFFSET="$3"; shift; shift ;;
-    -g | --graphic-offset ) GRAPHIC_OFFSET="$3"; shift; shift ;;
-    -p | --power-limit ) POWER_LIMIT="$3"; shift; shift ;;
+    -m | --mem-offset ) MEM_OFFSET="$2"; shift ;;
+    -g | --graphic-offset ) GRAPHIC_OFFSET="$2"; shift ;;
+    -p | --power-limit ) POWER_LIMIT="$2"; shift ;;
     -n | --gpu-num ) GPU_NUM="$2"; shift; shift ;;
     -- ) shift; break ;;
     * ) break ;;
