@@ -14,10 +14,10 @@ GPU_NUM=16
 
 while true; do
   case "$1" in
-    -m | --mem-offset ) MEM_OFFSET="$2"; shift ;;
-    -g | --graphic-offset ) GRAPHIC_OFFSET="$2"; shift ;;
-    -p | --power-limit ) POWER_LIMIT="$2"; shift ;;
-    -n | --gpu-num ) GPU_NUM="$2"; shift; shift ;;
+    -m | --mem-offset ) MEM_OFFSET="$2"; shift;shift ;;
+    -g | --graphic-offset ) GRAPHIC_OFFSET="$2"; shift;shift ;;
+    -p | --power-limit ) POWER_LIMIT="$2"; shift;shift ;;
+    -n | --gpu-num ) GPU_NUM="$2"; shift;shift ;;
     -- ) shift; break ;;
     * ) break ;;
   esac
