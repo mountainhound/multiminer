@@ -1,0 +1,42 @@
+#!/bin/bash
+ 
+OPTS=`getopt -o mgpn: --long mem-offset,graphic-offset,power-limit,gpu-num: -n 'parse-options' -- "$@"`
+
+if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
+
+echo "$OPTS"
+eval set -- "$OPTS"
+
+MEM_OFFSET=300
+GRAPHIC_OFFSET=100
+POWER_LIMIT=250
+GPU_NUM=16
+
+while true; do
+  case "$1" in
+    -m | --mem-offset ) MEM_OFFSET="$3"; shift; shift ;;
+    -g | --graphic-offset ) GRAPHIC_OFFSET="$3"; shift; shift ;;
+    -p | --power-limit ) POWER_LIMIT="$3"; shift; shift ;;
+    -n | --gpu-num ) GPU_NUM="$2"; shift; shift ;;
+    -- ) shift; break ;;
+    * ) break ;;
+  esac
+done
+
+echo MEM_OFFSET=$MEM_OFFSET
+echo GRAPHIC_OFFSET=$GRAPHIC_OFFSET
+echo POWER_LIMIT=$POWER_LIMIT
+echo GPU_NUM=$GPU_NUM
+ 
+# Enable nvidia-smi settings so they are persistent the whole time the system is on.
+nvidia-smi -pm 1
+ 
+## Apply settings to each GPU
+COUNTER=0
+while [  $COUNTER -lt $GPU_NUM ]; do
+    nvidia-smi -i $COUNTER -pl $POWER_LIMIT
+    nvidia-settings -a [gpu:$COUNTER]/GpuPowerMizerMode=1
+    nvidia-settings -a [gpu:$COUNTER]/GPUMemoryTransferRateOffset[2]=$MEM_OFFSET
+    nvidia-settings -a [gpu:$COUNTER]/GPUGraphicsClockOffset[2]=$GRAPHIC_OFFSET
+    let COUNTER=COUNTER+1 
+done
