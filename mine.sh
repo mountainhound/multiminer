@@ -8,9 +8,11 @@
 WALLET=33eyT1HqnAcZ6e4iFcqsUcozZuUdJnW3eb #Charles
 NICEHASH_WALLET=33eyT1HqnAcZ6e4iFcqsUcozZuUdJnW3eb #Charles
 ETHASH_WALLET=0x814a5e5a742c4377aac621419564242ae601f0c6 #Charles
+WORKER_NAME=devmachine
 
 export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
 export PATH=/usr/local/cuda-8.0/bin:$PATH
+
 
 if [[ $1 = "-lyra2rev2" ]]; then
 	./ccminer -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zpool.ca:4533 -u $WALLET	-p [c=BTC] -b 4068
@@ -33,11 +35,11 @@ if [[ $1 = "-ethash" ]]; then
 fi
 
 if [[ $1 = "-ubiq" ]]; then
-	./ethminer -U -SP 1 -S ubiq.hodlpool.com:8009 -O $ETHASH_WALLET.dev-machine --farm-recheck 200 --api-port 4068
+	./ethminer -P stratum1+tcp://$ETHASH_WALLET.$WORKER_NAME@ubiq.hodlpool.com:8009 --farm-recheck 200 --api-port 4068
 fi
 
 if [[ $1 = "-nicehash-ethash" ]]; then
-	./ethminer -U -SP 2 -S daggerhashimoto.usa.nicehash.com:3353 -O $NICEHASH_WALLET --farm-recheck 200 --api-port 4068
+	./ethminer -SP 2 -U -S daggerhashimoto.usa.nicehash.com:3353 -O $NICEHASH_WALLET --farm-recheck 200 --api-port 4068
 fi
 
 if [[ $1 = "-neoscrypt" ]]; then
