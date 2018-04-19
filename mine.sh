@@ -1,9 +1,13 @@
 #!/bin/bash
 
 #WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr.thinkpad
-WALLET=1FCLeN861h7SGSheTBDyBimQMQPNX8QUZX
-NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr
-EQUIHASH_WALLET=0x333b5748538B03362f70A1be261599eD963925dC
+#WALLET=1FCLeN861h7SGSheTBDyBimQMQPNX8QUZX
+#NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr
+#EQUIHASH_WALLET=0x333b5748538B03362f70A1be261599eD963925dC
+
+WALLET=33eyT1HqnAcZ6e4iFcqsUcozZuUdJnW3eb #Charles
+NICEHASH_WALLET=33eyT1HqnAcZ6e4iFcqsUcozZuUdJnW3eb #Charles
+ETHASH_WALLET=0x814a5e5a742c4377aac621419564242ae601f0c6 #Charles
 
 export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
 export PATH=/usr/local/cuda-8.0/bin:$PATH
@@ -25,7 +29,11 @@ if [[ $1 = "-nicehash-equihash" ]]; then
 fi
 
 if [[ $1 = "-ethash" ]]; then
-	./ethminer -U -S eth-us-east1.nanopool.org:9999 -O $EQUIHASH_WALLET.dev-machine --farm-recheck 200 --api-port 4068
+	./ethminer -U -S eth-us-east1.nanopool.org:9999 -O $ETHASH_WALLET.dev-machine --farm-recheck 200 --api-port 4068
+fi
+
+if [[ $1 = "-ubiq" ]]; then
+	./ethminer -U -SP 1 -S ubiq.hodlpool.com:8009 -O $ETHASH_WALLET.dev-machine --farm-recheck 200 --api-port 4068
 fi
 
 if [[ $1 = "-nicehash-ethash" ]]; then
