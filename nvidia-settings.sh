@@ -7,10 +7,10 @@ if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 echo "$OPTS"
 eval set -- "$OPTS"
 
-MEM_OFFSET=300
+MEM_OFFSET=450
 GRAPHIC_OFFSET=100
-POWER_LIMIT=250
-GPU_NUM=16
+POWER_LIMIT=225
+GPU_NUM=6
 
 while true; do
   case "$1" in
