@@ -1,13 +1,13 @@
 #!/bin/bash
 
-#WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr.thinkpad
-#WALLET=1FCLeN861h7SGSheTBDyBimQMQPNX8QUZX
-#NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr
-#EQUIHASH_WALLET=0x333b5748538B03362f70A1be261599eD963925dC
+#WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr
+WALLET=1FCLeN861h7SGSheTBDyBimQMQPNX8QUZX #Parker
+NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr
+ETHASH_WALLET=0x333b5748538B03362f70A1be261599eD963925dC
 
-WALLET=33eyT1HqnAcZ6e4iFcqsUcozZuUdJnW3eb #Charles
-NICEHASH_WALLET=33eyT1HqnAcZ6e4iFcqsUcozZuUdJnW3eb #Charles
-ETHASH_WALLET=0x814a5e5a742c4377aac621419564242ae601f0c6 #Charles
+#WALLET=33eyT1HqnAcZ6e4iFcqsUcozZuUdJnW3eb #Charles
+#NICEHASH_WALLET=33eyT1HqnAcZ6e4iFcqsUcozZuUdJnW3eb #Charles
+#UBIQ_WALLET=0x814a5e5a742c4377aac621419564242ae601f0c6 #Charles
 WORKER_NAME=devmachine
 
 export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
@@ -35,7 +35,7 @@ if [[ $1 = "-ethash" ]]; then
 fi
 
 if [[ $1 = "-ubiq" ]]; then
-	./ethminer -P stratum1+tcp://$ETHASH_WALLET.$WORKER_NAME@ubiq.hodlpool.com:8009 --farm-recheck 200 --api-port 4068
+	./ethminer -P stratum1+tcp://$UBIQ_WALLET.$WORKER_NAME@ubiq.hodlpool.com:8009 --farm-recheck 200 --api-port 4068
 fi
 
 if [[ $1 = "-nicehash-ethash" ]]; then
