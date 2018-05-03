@@ -10,7 +10,8 @@ eval set -- "$OPTS"
 MEM_OFFSET=300
 GRAPHIC_OFFSET=100
 POWER_LIMIT=200
-GPU_NUM=3
+GPU_NUM=16
+
 
 while true; do
   case "$1" in
@@ -29,8 +30,9 @@ echo POWER_LIMIT=$POWER_LIMIT
 echo GPU_NUM=$GPU_NUM
  
 # Enable nvidia-smi settings so they are persistent the whole time the system is on.
+
+nvidia-xconfig -a --enable-all-gpus --cool-bits=28
 nvidia-smi -pm 1
- 
 ## Apply settings to each GPU
 COUNTER=0
 while [  $COUNTER -lt $GPU_NUM ]; do
