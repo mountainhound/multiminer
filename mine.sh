@@ -107,6 +107,16 @@ if [[ $1 = "-xevan" ]]; then
 	./ccminer-xevan -a xevan -o stratum+tcp://blake2s.mine.zpool.ca:3739 -u $WALLET -p [c=BTC] -b 4068
 fi
 
+if [[ $1 = "-phi1612" ]]; then
+	./ccminer -a phi -o stratum+tcp://phi.mine.zergpool.com:8333 -u $WALLET -p [c=BTC] -b 4068
+fi
+
+if [[ $1 = "-timetravel10" ]]; then
+	./ccminer -a timetravel -o stratum+tcp://timetravel.mine.zergpool.com:3555 -u $WALLET -p [c=BTC] -b 4068
+fi
+
+
+
 
 
 
