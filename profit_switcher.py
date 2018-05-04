@@ -14,6 +14,8 @@ from apscheduler.triggers.interval import IntervalTrigger
 import logging
 import atexit
 import re
+import signal
+import sys
 
 logging.basicConfig()
 
