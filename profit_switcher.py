@@ -126,7 +126,7 @@ class multiminer():
 				algo = coin.get('algorithm').lower().replace(" ","").replace("(","").replace(")","")
 				coin = coin.get('coin').lower().replace(" ","").replace("(","").replace(")","")
 
-				if algo in self.ccminer_algos or self.ethash_algos: 
+				if algo in self.ccminer_algos or algo in self.ethash_algos: 
 					if not profit_algo and not profit_coin:
 						profit_algo = algo
 						profit_coin = coin
