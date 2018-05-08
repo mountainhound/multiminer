@@ -1,14 +1,17 @@
 #!/bin/bash
 
-WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr #Grant
-#WALLET=1FCLeN861h7SGSheTBDyBimQMQPNX8QUZX #Parker-Coinbase
-NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr #Parker-Nicehash
+#WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr #Grant
+WALLET=1FCLeN861h7SGSheTBDyBimQMQPNX8QUZX #Parker-Coinbase
+NICEHASH_WALLET=1FCLeN861h7SGSheTBDyBimQMQPNX8QUZX #Parker-Coinbase
+#NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr #Grant-Nicehash
 ETHASH_WALLET=0x333b5748538B03362f70A1be261599eD963925dC #Parker-Eth
 
 WORKER_NAME=devmachine
 
-export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
-export PATH=/usr/local/cuda-8.0/bin:$PATH
+#export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
+#export PATH=/usr/local/cuda-8.0/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+export PATH=/usr/local/cuda/bin:$PATH
 
 
 if [[ $1 = "-lyra2rev2" ]]; then
