@@ -7,8 +7,8 @@ if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 echo "$OPTS"
 eval set -- "$OPTS"
 
-MEM_OFFSET=0
-GRAPHIC_OFFSET=50
+MEM_OFFSET=-1
+GRAPHIC_OFFSET=0
 POWER_LIMIT=200
 GPU_NUM=16
 
@@ -39,12 +39,12 @@ while [  $COUNTER -lt $GPU_NUM ]; do
     nvidia-smi -i $COUNTER -pl $POWER_LIMIT
     DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 nvidia-settings -a [gpu:$COUNTER]/GpuPowerMizerMode=0
     
-    if [ $MEM_OFFSET -gt 0 ];
+    if [ $MEM_OFFSET -gt -1 ];
     then
     	DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 nvidia-settings -a [gpu:$COUNTER]/GPUMemoryTransferRateOffset[3]=$MEM_OFFSET
     fi
     
-    if [ $GRAPHIC_OFFSET -gt 0 ];
+    if [ $GRAPHIC_OFFSET -gt -1 ];
     then
     	DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 nvidia-settings -a [gpu:$COUNTER]/GPUGraphicsClockOffset[3]=$GRAPHIC_OFFSET
     fi
