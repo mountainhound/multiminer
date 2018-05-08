@@ -7,7 +7,7 @@ if [ $? != 0 ] ; then echo "Failed parsing options." >&2 ; exit 1 ; fi
 echo "$OPTS"
 eval set -- "$OPTS"
 
-MEM_OFFSET=300
+MEM_OFFSET=0
 GRAPHIC_OFFSET=100
 POWER_LIMIT=200
 GPU_NUM=16
@@ -31,14 +31,23 @@ echo GPU_NUM=$GPU_NUM
  
 # Enable nvidia-smi settings so they are persistent the whole time the system is on.
 
-nvidia-xconfig -a --enable-all-gpus --cool-bits=28
-nvidia-smi -pm 1
+#nvidia-xconfig -a --enable-all-gpus --cool-bits=28
+nvidia-smi -pm 1 --gom=COMPUTE
 ## Apply settings to each GPU
 COUNTER=0
 while [  $COUNTER -lt $GPU_NUM ]; do
     nvidia-smi -i $COUNTER -pl $POWER_LIMIT
-    DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 nvidia-settings -a [gpu:$COUNTER]/GpuPowerMizerMode=1
-    DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 nvidia-settings -a [gpu:$COUNTER]/GPUMemoryTransferRateOffset[3]=$MEM_OFFSET
-    DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 nvidia-settings -a [gpu:$COUNTER]/GPUGraphicsClockOffset[3]=$GRAPHIC_OFFSET
+    DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 nvidia-settings -a [gpu:$COUNTER]/GpuPowerMizerMode=0
+    
+    if [ $MEM_OFFSET -gt 0 ];
+    then
+    	DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 nvidia-settings -a [gpu:$COUNTER]/GPUMemoryTransferRateOffset[3]=$MEM_OFFSET
+    fi
+    
+    if [ $GRAPHIC_OFFSET -gt 0 ];
+    then
+    	DISPLAY=:0 XAUTHORITY=/var/run/lightdm/root/:0 nvidia-settings -a [gpu:$COUNTER]/GPUGraphicsClockOffset[3]=$GRAPHIC_OFFSET
+    fi
+    
     let COUNTER=COUNTER+1 
 done
