@@ -15,7 +15,7 @@ export PATH=/usr/local/cuda/bin:$PATH
 
 
 if [[ $1 = "-lyra2rev2" ]]; then
-	./ccminer -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zpool.ca:4533 -u $WALLET	-p [c=BTC] -b 4068
+	./ccminer-nanashi -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zpool.ca:4533 -u $WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-nicehash-lyra2rev2" ]]; then
