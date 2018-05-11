@@ -9,17 +9,19 @@ sp = subprocess.Popen(['nvidia-smi', '-q'], stdout=subprocess.PIPE, stderr=subpr
 
 out_str = sp.communicate()
 out_str = str(out_str)
-out_list = out_str.split('\\n')
-print (out_str)
-print (out_list)
-out_dict = {}
+gpu_list = out_str.split('\n\n')
 
-for item in out_list:
-    try:
-        key, val = item.split(':')
-        key, val = key.strip(), val.strip()
-        out_dict[key] = val
-    except:
-        pass
 
-print(out_dict)
+for gpu in gpu_list:
+	out_list = gpu.split('\\n')
+	out_dict = {}
+
+	for item in out_list:
+		try:
+			key, val = item.split(':')
+			key, val = key.strip(), val.strip()
+			out_dict[key] = val
+		except:
+			pass
+
+	print(out_dict)
