@@ -21,7 +21,6 @@ gpu_list = doc.get('nvidia_smi_log').get('gpu')
 if isinstance(gpu_list, dict): 
 	print (gpu_list.get('temperature'))
 else:
-	print (gpu_list)
 	for gpu in gpu_list:
 		print (gpu.get('temperature'))
 
