@@ -21,7 +21,9 @@ logging.basicConfig()
 
 app = Flask(__name__)
 
-
+maintenance_ts = 0
+maintenance_interval = 2 #minutes
+profit_interval = 10 #minutes
 
 def auto_profit_switch():
 	url = "http://localhost:5000/profit_switch"
@@ -38,14 +40,15 @@ def maintenance():
 	else: 
 		restart_flag = True
 
-	ret = main.profit_switch(force_switch = restart_flag)
+	if not maintenance_ts or ((time.time() - maintenance_ts) > (profit_interval*60)) or restart_flag:
+		ret = main.profit_switch(force_switch = restart_flag)
 
 
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
     func=maintenance,
-    trigger=IntervalTrigger(minutes=10),
+    trigger=IntervalTrigger(minutes=maintenance_interval),
     id='Checking Profit',
     name='Check Profit Every X Minutes',
     replace_existing=True)
