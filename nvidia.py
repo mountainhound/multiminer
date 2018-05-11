@@ -9,6 +9,7 @@ import pprint
 import json
  
 sp = subprocess.Popen(['nvidia-smi', '-q','-x','-f','temp.xml'])
+sp.wait()
 
 with open('temp.xml') as fd:
     doc = xmltodict.parse(fd.read())
