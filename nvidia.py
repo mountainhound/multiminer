@@ -4,24 +4,15 @@ This is very basic!
 """
 
 import subprocess
+import xmltodict
+import pprint
+import json
+ 
+sp = subprocess.Popen(['nvidia-smi', '-q','-x','-f', '~/temp.xml'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-sp = subprocess.Popen(['nvidia-smi', '-q'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+with open('temp.xml') as fd:
+    doc = xmltodict.parse(fd.read())
 
-out_str = sp.communicate()
-out_str = str(out_str)
-gpu_list = out_str.split('\n\n')
+pp = pprint.PrettyPrinter(indent=4)
+pp.pprint(json.dumps(doc))
 
-
-for gpu in gpu_list:
-	out_list = gpu.split('\\n')
-	out_dict = {}
-
-	for item in out_list:
-		try:
-			key, val = item.split(':')
-			key, val = key.strip(), val.strip()
-			out_dict[key] = val
-		except:
-			pass
-
-	print(out_dict)
