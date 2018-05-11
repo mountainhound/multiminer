@@ -24,4 +24,5 @@ else:
 	for gpu in gpu_list:
 		print (gpu.get('temperature'))
 
-		
+sp = subprocess.Popen(['rm','temp.xml'])
+sp.wait()
