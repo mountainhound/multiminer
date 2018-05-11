@@ -8,14 +8,16 @@ ETHASH_WALLET=0x333b5748538B03362f70A1be261599eD963925dC #Parker-Eth
 
 WORKER_NAME=devmachine
 
-#export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
-#export PATH=/usr/local/cuda-8.0/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
+export PATH=/usr/local/cuda-8.0/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-9.0/lib64:$LD_LIBRARY_PATH
+export PATH=/usr/local/cuda-9.0/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
 export PATH=/usr/local/cuda/bin:$PATH
 
 
 if [[ $1 = "-lyra2rev2" ]]; then
-	./ccminer-nanashi -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zpool.ca:4533 -u $WALLET -p [c=BTC] -b 4068
+	./ccminer-xevan -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zpool.ca:4533 -u $WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-nicehash-lyra2rev2" ]]; then

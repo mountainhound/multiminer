@@ -5,6 +5,7 @@ import json
 import subprocess
 import requests,subprocess,shlex,time,datetime,statistics,configparser,sys,re,fcntl,os,random
 from telnetlib import Telnet
+import socket
 from queue import Queue
 from threading import Thread
 import settings
@@ -24,6 +25,7 @@ app = Flask(__name__)
 maintenance_ts = 0
 maintenance_interval = 2 #minutes
 profit_interval = 10 #minutes
+maintenance_stats = None
 
 def auto_profit_switch():
 	url = "http://localhost:5000/profit_switch"
@@ -35,14 +37,25 @@ def maintenance():
 	restart_flag = False
 	if stats: 
 		hashrate = stats.get('hashrate')
+		algo = stats.get('algo')
+
 		if hashrate == 0: 
+			print ("Miner appears to be hung.. hashrate is 0 forcing algo change")
 			restart_flag = True
+		
+		if maintenance_stats: 
+			if algo == maintenance_stats.get('algo') and stats.get('shares_accepted') == maintenance_stats.get('shares_accepted'):
+				print ("Miner appears to be hung.. No shares in 2 minutes forcing algo change")
+				restart_flag = True
 	else: 
+		print ("Miner not returning stats forcing algo change")
 		restart_flag = True
+
+	maintenance_stats = stats
 
 	if not maintenance_ts or ((time.time() - maintenance_ts) >= (profit_interval*60)) or restart_flag:
 		ret = main.profit_switch(force_switch = restart_flag)
-
+		maintenance_ts = time.time()
 
 scheduler = BackgroundScheduler()
 scheduler.start()
@@ -224,8 +237,9 @@ class multiminer():
 
 	def ethash_api_output(self):
 		try:
+			print ("ETHASH API OUTPUT")
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			s.connect(('micciminer', 4068))
+			s.connect(('localhost', 4068))
 			s.sendall('{"id":0,"jsonrpc":"2.0","method":"miner_getstat1"}\n'.encode('utf-8'))
 			resp = ''
 			while 1:
@@ -234,12 +248,14 @@ class multiminer():
 				if not data or (len(data) < 4096 and data[-3:] == b']}\n'):
 					break
 			s.close()
-			
-			ret = json.loads().get('result')
+			print (resp)
 
-		except:
+			ret = json.loads(resp).get('result')
+			return ret
+		except Exception as err:
+			print ("ERROR IN JSON RPC:{}".format(err))
 			return False
-			print ("ERROR IN JSON RPC")
+			
 
 	def get_miner_output(self,n=10):	
 		ret = {}
@@ -285,7 +301,7 @@ class multiminer():
 				thread_output =  self.ccminer_api_output()
 				thread_output = thread_output.split(";")
 
-		if self.current_algo in settings.ethash_algos:
+		if self.current_algo in self.ethash_algos:
 			output =  self.ethash_api_output()
 			if output: 
 				gpu_hashrates = output[3].split(";")
