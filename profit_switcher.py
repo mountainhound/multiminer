@@ -40,7 +40,7 @@ def maintenance():
 	else: 
 		restart_flag = True
 
-	if not maintenance_ts or ((time.time() - maintenance_ts) > (profit_interval*60)) or restart_flag:
+	if not maintenance_ts or ((time.time() - maintenance_ts) >= (profit_interval*60)) or restart_flag:
 		ret = main.profit_switch(force_switch = restart_flag)
 
 
