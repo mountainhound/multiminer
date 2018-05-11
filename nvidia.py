@@ -14,6 +14,7 @@ sp.wait()
 with open('temp.xml') as fd:
     doc = xmltodict.parse(fd.read())
 
-pp = pprint.PrettyPrinter(indent=4)
-pp.pprint(json.dumps(doc))
+doc = dict(doc)
+
+print (doc.get('nvidia_smi_log').get('gpu').get('temperature'))
 
