@@ -22,10 +22,8 @@ logging.basicConfig()
 
 app = Flask(__name__)
 
-maintenance_ts = 0
-maintenance_interval = 2 #minutes
-profit_interval = 10 #minutes
-maintenance_stats = None
+
+
 
 def auto_profit_switch():
 	url = "http://localhost:5000/profit_switch"
@@ -34,6 +32,8 @@ def auto_profit_switch():
 
 def maintenance():
 	stats = main.get_miner_stats()
+	maintenance_stats = main.maintenance_stats
+	maintenance_ts = main.maintenance_ts
 	restart_flag = False
 	if stats: 
 		hashrate = stats.get('hashrate')
@@ -51,17 +51,17 @@ def maintenance():
 		print ("Miner not returning stats forcing algo change")
 		restart_flag = True
 
-	maintenance_stats = stats
+	main.maintenance_stats = stats
 
-	if not maintenance_ts or ((time.time() - maintenance_ts) >= (profit_interval*60)) or restart_flag:
+	if not maintenance_ts or ((time.time() - maintenance_ts) >= (settings.profit_interval*60)) or restart_flag:
 		ret = main.profit_switch(force_switch = restart_flag)
-		maintenance_ts = time.time()
+		main.maintenance_ts = time.time()
 
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
     func=maintenance,
-    trigger=IntervalTrigger(minutes=maintenance_interval),
+    trigger=IntervalTrigger(minutes=settings.maintenance_interval),
     id='Checking Profit',
     name='Check Profit Every X Minutes',
     replace_existing=True)
@@ -112,6 +112,8 @@ def miner_stats():
 class multiminer():
 	def __init__(self,app):
 		print ("INIT")
+		self.maintenance_stats = None
+		self.maintenance_ts = 0
 		self.setting_path = 'conf.json'
 		self.app = app
 		self.ccminer_algos = settings.ccminer_algos

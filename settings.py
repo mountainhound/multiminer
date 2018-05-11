@@ -9,3 +9,6 @@ ethash_algos = ["ethash","nicehash-ethash"]
 profit_flag = True
 
 default = "equihash"
+
+profit_interval = 10 #minutes
+maintenance_interval = .5 #minutes
