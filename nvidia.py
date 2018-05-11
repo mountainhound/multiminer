@@ -8,7 +8,7 @@ import xmltodict
 import pprint
 import json
  
-sp = subprocess.Popen(['nvidia-smi', '-q','-x','-f', '~/temp.xml'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+sp = subprocess.Popen(['nvidia-smi', '-q','-x','-f','temp.xml'])
 
 with open('temp.xml') as fd:
     doc = xmltodict.parse(fd.read())
