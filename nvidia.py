@@ -7,6 +7,7 @@ import subprocess
 import xmltodict
 import pprint
 import json
+
  
 sp = subprocess.Popen(['nvidia-smi', '-q','-x','-f','temp.xml'])
 sp.wait()
@@ -15,6 +16,13 @@ with open('temp.xml') as fd:
     doc = xmltodict.parse(fd.read())
 
 doc = dict(doc)
+gpu_list = doc.get('nvidia_smi_log').get('gpu')
 
-print (doc.get('nvidia_smi_log').get('gpu').get('temperature'))
+if isinstance(gpu_list, dict): 
+	print (gpu_list.get('temperature'))
+else:
+	print (gpu_list)
+	for gpu in gpu_list:
+		print (gpu.get('temperature'))
 
+		
