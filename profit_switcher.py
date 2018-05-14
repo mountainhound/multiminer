@@ -3,6 +3,7 @@ from flask import Flask, render_template, Response, jsonify, flash, redirect, re
 from gevent.wsgi import WSGIServer
 import json
 import subprocess
+import xmltodict
 import requests,subprocess,shlex,time,datetime,statistics,configparser,sys,re,fcntl,os,random
 from telnetlib import Telnet
 import socket
@@ -87,9 +88,10 @@ def mining_mode():
 	if mode.strip().lower() == "auto":
 		main.profit_flag = True
 		ret = main.profit_switch()
-	elif mode:
+	elif mode.strip().lower():
 		if mode in main.ccminer_algos or main.ethash_algos:
 			ret = main.set_mining_mode(mode)
+			main.profit_flag = False
 		else:
 			return jsonify({"message":"Algo not supported: {}".format(mode)}),200
 	return jsonify({"message":"Mining Mode set to {}".format(mode), "response":"{}".format(ret)}),200
@@ -223,6 +225,32 @@ class multiminer():
 			return ret
 		return "No Algo Running"
 
+	def nvidia_temp_output(self):
+
+		sp = subprocess.Popen(['nvidia-smi', '-q','-x','-f','temp.xml'])
+		sp.wait()
+
+		with open('temp.xml') as fd:
+			doc = xmltodict.parse(fd.read())
+
+		doc = dict(doc)
+		gpu_list = doc.get('nvidia_smi_log').get('gpu')
+		temp_list = []
+
+		if isinstance(gpu_list, dict): 
+			temp_dict = gpu_list.get('temperature')
+			temp_list.append(temp_dict.get('gpu_temp'))
+			
+		elif isinstance(gpu_list,list):
+			for gpu in gpu_list:
+				temp_dict = gpu.get('temperature')
+				temp_list.append(temp_dict.get('gpu_temp'))
+
+		sp = subprocess.Popen(['rm','temp.xml'])
+		sp.wait()
+
+		return temp_list
+
 	def ccminer_api_output(self,command = b"summary"):
 		try: 
 			tn = Telnet("localhost","4068")
@@ -316,6 +344,9 @@ class multiminer():
 				stat_dict['algo'] = "ethash"
 				stat_dict['shares_accepted'] = output[1]
 
+		temp_list = self.nvidia_temp_output()
+		stat_dict['temps'] = temp_list
+		
 		return stat_dict
 
 	def run(self):

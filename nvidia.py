@@ -17,12 +17,18 @@ with open('temp.xml') as fd:
 
 doc = dict(doc)
 gpu_list = doc.get('nvidia_smi_log').get('gpu')
+temp_list = []
 
 if isinstance(gpu_list, dict): 
-	print (gpu_list.get('temperature'))
-else:
+	temp_dict = gpu_list.get('temperature')
+	temp_list.append(temp_dict.get('gpu_temp'))
+	
+elif isinstance(gpu_list,list):
 	for gpu in gpu_list:
-		print (gpu.get('temperature'))
+		temp_dict = gpu.get('temperature')
+		temp_list.append(temp_dict.get('gpu_temp'))
+		
+return temp_list
 
 sp = subprocess.Popen(['rm','temp.xml'])
 sp.wait()
