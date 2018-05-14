@@ -5,10 +5,11 @@ This is very basic!
 
 import subprocess
 import xmltodict
-import pprint
 import json
 
  
+
+nvidia_temps
 sp = subprocess.Popen(['nvidia-smi', '-q','-x','-f','temp.xml'])
 sp.wait()
 
@@ -27,7 +28,7 @@ elif isinstance(gpu_list,list):
 	for gpu in gpu_list:
 		temp_dict = gpu.get('temperature')
 		temp_list.append(temp_dict.get('gpu_temp'))
-		
+
 return temp_list
 
 sp = subprocess.Popen(['rm','temp.xml'])

@@ -79,7 +79,14 @@ def profit_switch():
 
 @app.route('/mining_mode', methods=['POST'])
 def mining_mode(): 
-	mode = request.json.get('mode')
+	mode = None
+	if request.json:
+		mode = request.json.get('mode')
+	if request.data:
+		mode = request.data.get('mode')
+	if request.form: 
+		mode = request.form.get('mode')
+
 	print (mode)
 
 	if mode is None: 
@@ -87,10 +94,16 @@ def mining_mode():
 
 	if mode.strip().lower() == "auto":
 		main.profit_flag = True
+		main.stop_flag = False
 		ret = main.profit_switch()
+	elif mode.strip().lower() == "stop":
+		ret = main.set_mining_mode(mode)
+		main.profit_flag = False
+		main.stop_flag = True
 	elif mode.strip().lower():
 		if mode in main.ccminer_algos or main.ethash_algos:
 			ret = main.set_mining_mode(mode)
+			main.stop_flag = False
 			main.profit_flag = False
 		else:
 			return jsonify({"message":"Algo not supported: {}".format(mode)}),200
@@ -107,8 +120,8 @@ def miner_output():
 @app.route('/miner_stats', methods=['GET'])
 def miner_stats(): 
 	ret = main.get_miner_stats()
-
-	return jsonify({"data":"{}".format(ret)}),200
+	jsonify(ret)
+	return jsonify({"data":ret}),200
 
 
 class multiminer():
@@ -125,6 +138,7 @@ class multiminer():
 		self.profit_api = ProfitCoin()
 		self.current_algo = settings.default
 		self.output_q = Queue(maxsize = 100)
+		self.stop_flag = False
 		ret = None
 		print ("Testing")
 		subprocess.Popen('fuser -k 4068/tcp'.split(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=1)
@@ -138,35 +152,36 @@ class multiminer():
 		
 
 	def profit_switch(self,force_switch = False):
-		if self.profit_flag:
-			sorted_list = self.profit_api.most_profitable()
-			profit_algo = None
-			profit_coin = None
-			for coin in sorted_list: 
-				algo = coin.get('algorithm').lower().replace(" ","").replace("(","").replace(")","")
-				coin = coin.get('coin').lower().replace(" ","").replace("(","").replace(")","")
+		if self.profit_flag or force_switch:
+			if not self.stop_flag: 
+				sorted_list = self.profit_api.most_profitable()
+				profit_algo = None
+				profit_coin = None
+				for coin in sorted_list: 
+					algo = coin.get('algorithm').lower().replace(" ","").replace("(","").replace(")","")
+					coin = coin.get('coin').lower().replace(" ","").replace("(","").replace(")","")
 
-				if algo in self.ccminer_algos or algo in self.ethash_algos: 
-					if not profit_algo and not profit_coin:
-						profit_algo = algo
-						profit_coin = coin
-						if "nicehash" in profit_coin:
-							profit_algo = profit_coin
+					if algo in self.ccminer_algos or algo in self.ethash_algos: 
+						if not profit_algo and not profit_coin:
+							profit_algo = algo
+							profit_coin = coin
+							if "nicehash" in profit_coin:
+								profit_algo = profit_coin
 
-						#Forces a Switch from Current Algo so it will go to the next coin in list
-						if self.current_algo == profit_algo and force_switch:
-							profit_algo = None
-							profit_coin = None
-							
-			if self.current_algo == profit_algo and sorted_list:
-				print ("Already mining most profitable algo")
-				return "Already mining most profitable algo"
-			elif profit_algo: 
-				self.set_mining_mode(profit_algo)
-				print ("Profit Switching to Algo: {}".format(profit_algo))
-				return "Profit Switching to Algo: {}".format(profit_algo)
-			print ("NO ALGO FOUND")
-			return ("NO ALGO FOUND")
+							#Forces a Switch from Current Algo so it will go to the next coin in list
+							if self.current_algo == profit_algo and force_switch:
+								profit_algo = None
+								profit_coin = None
+								
+				if self.current_algo == profit_algo and sorted_list:
+					print ("Already mining most profitable algo")
+					return "Already mining most profitable algo"
+				elif profit_algo: 
+					self.set_mining_mode(profit_algo)
+					print ("Profit Switching to Algo: {}".format(profit_algo))
+					return "Profit Switching to Algo: {}".format(profit_algo)
+				print ("NO ALGO FOUND")
+				return ("NO ALGO FOUND")
 		print ("Mode is not auto")
 		return ("mode is not auto")
 
@@ -321,7 +336,7 @@ class multiminer():
 				stat_dict['current_miner'] = 'ccminer_{}'.format(version)
 				stat_dict['hashrate'] = float(output[5][4:])
 				stat_dict['hashrate_unit'] = output[5][:3]
-				stat_dict['gpus'] = int(output[4][5:])
+				stat_dict['gpu_num'] = int(output[4][5:])
 				stat_dict['algo'] = output[3][5:]
 				stat_dict['shares_accepted'] = int(output[7][4:])
 				stat_dict['shares_rejected'] = int(output[8][4:])
@@ -351,7 +366,7 @@ class multiminer():
 
 	def run(self):
 
-		http_server = WSGIServer(('',5000),self.app)
+		http_server = WSGIServer(('',5001),self.app)
 		http_server.serve_forever()
 
 		#self.app.run(host='0.0.0.0', port = 5000, debug=False, use_reloader=False, threaded=True)
