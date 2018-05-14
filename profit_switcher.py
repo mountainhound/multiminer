@@ -23,9 +23,6 @@ logging.basicConfig()
 
 app = Flask(__name__)
 
-
-
-
 def auto_profit_switch():
 	url = "http://localhost:5000/profit_switch"
 	ret = requests.get(url)
@@ -366,7 +363,7 @@ class multiminer():
 
 	def run(self):
 
-		http_server = WSGIServer(('',5001),self.app)
+		http_server = WSGIServer(('',5000),self.app)
 		http_server.serve_forever()
 
 		#self.app.run(host='0.0.0.0', port = 5000, debug=False, use_reloader=False, threaded=True)
