@@ -42,7 +42,7 @@ nvidia-smi -pm 1
 COUNTER=0
 while [  $COUNTER -lt $GPU_NUM ]; do
     
-    if [ $MEM_OFFSET -gt -1 ];
+    if [ $POWER_LIMIT -gt -1 ];
     then
     nvidia-smi -i $COUNTER -pl $POWER_LIMIT
     fi
