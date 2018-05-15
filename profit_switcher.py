@@ -239,8 +239,7 @@ class multiminer():
 
 	def nvidia_temp_output(self):
 		try: 
-			sp = subprocess.Popen(['nvidia-smi', '-q','-x','-f','temp.xml'])
-			sp.wait()
+			sp = subprocess.run(['nvidia-smi', '-q','-x','-f','temp.xml'],timeout = 25)
 
 			with open('temp.xml') as fd:
 				doc = xmltodict.parse(fd.read())
@@ -258,14 +257,18 @@ class multiminer():
 					temp_dict = gpu.get('temperature')
 					temp_list.append(temp_dict.get('gpu_temp'))
 
-			sp = subprocess.Popen(['rm','temp.xml'])
-			sp.wait()
+			sp = subprocess.run(['rm','temp.xml'])
 
 			return temp_list
 			
 		except Exception as err: 
 			print (err)
 			return None
+
+		except subprocess.TimeoutExpired
+			print ("NVIDIA TEMP TIMED OUT")
+			return None
+			
 	def ccminer_api_output(self,command = b"summary"):
 		try: 
 			tn = Telnet("localhost","4068")
