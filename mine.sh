@@ -6,6 +6,7 @@
 WALLET=395WprTpQkg4EU9e92gcBM4QDq4ataosAZ #Kraken BTC
 ETHASH_WALLET=0xA13C320155F9A301F166C6FdE8189D974E9C1716 #Kraken-Eth
 NICEHASH_WALLET=395WprTpQkg4EU9e92gcBM4QDq4ataosAZ #Kraken BTC
+EQUIHASH_WALLET=t1NKe7ayhDZijC1TzNLfd5gPTBfbbU1Ktyg #Kraken ZCash
 
 #WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr #Grant
 #NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr #Grant-Nicehash
@@ -30,7 +31,7 @@ if [[ $1 = "-nicehash-lyra2rev2" ]]; then
 fi
 
 if [[ $1 = "-equihash" ]]; then
-	./ccminer -a equihash -o stratum+tcp://equihash.mine.zpool.ca:2142 -u $WALLET -p [c=BTC] -b 4068
+	./ccminer -a equihash -o stratum+tcp://zec.2miners.com:1010 -u $EQUIHASH_WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-nicehash-equihash" ]]; then
