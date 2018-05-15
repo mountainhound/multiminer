@@ -265,10 +265,10 @@ class multiminer():
 			print (err)
 			return None
 
-		except subprocess.TimeoutExpired
+		except subprocess.TimeoutExpired:
 			print ("NVIDIA TEMP TIMED OUT")
 			return None
-			
+
 	def ccminer_api_output(self,command = b"summary"):
 		try: 
 			tn = Telnet("localhost","4068")
