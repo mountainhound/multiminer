@@ -79,8 +79,6 @@ def mining_mode():
 	mode = None
 	if request.json:
 		mode = request.json.get('mode')
-	if request.data:
-		mode = request.data.get('mode')
 	if request.form: 
 		mode = request.form.get('mode')
 
