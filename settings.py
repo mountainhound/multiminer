@@ -10,5 +10,5 @@ profit_flag = True
 
 default = "equihash"
 
-profit_interval = 10 #minutes
-maintenance_interval = 2 #minutes
+profit_interval = 30 #minutes
+maintenance_interval = 5 #minutes

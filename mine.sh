@@ -22,7 +22,7 @@ export PATH=/usr/local/cuda/bin:$PATH
 
 
 if [[ $1 = "-lyra2rev2" ]]; then
-	./ccminer-xevan -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zpool.ca:4533 -u $WALLET -p [c=BTC] -b 4068
+	./ccminer-xevan -a lyra2v2 -o stratum+tcp://lyra2v2.mine.zergpool.com:4533 -u $WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-nicehash-lyra2rev2" ]]; then
@@ -50,7 +50,7 @@ if [[ $1 = "-nicehash-ethash" ]]; then
 fi
 
 if [[ $1 = "-neoscrypt" ]]; then
-	./ccminer -a neoscrypt -o stratum+tcp://neoscrypt.mine.zpool.ca:4233 -u $WALLET -p [c=BTC] -b 4068
+	./ccminer -a neoscrypt -o stratum+tcp://neoscrypt.mine.zergpool.com:4233 -u $WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-nicehash-neoscrypt" ]]; then
@@ -58,7 +58,7 @@ if [[ $1 = "-nicehash-neoscrypt" ]]; then
 fi
 
 if [[ $1 = "-scrypt" ]]; then
-	./ccminer -a scrypt -o stratum+tcp://scrypt.mine.zpool.ca:3433 -u $WALLET -p [c=BTC] -b 4068
+	./ccminer -a scrypt -o stratum+tcp://scrypt.mine.zergpool.com:3433 -u $WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-x11gost" ]]; then
@@ -70,11 +70,11 @@ if [[ $1 = "-nicehash-x11gost" ]]; then
 fi
 
 if [[ $1 = "-x17" ]]; then
-	./ccminer -a x17 -o stratum+tcp://x17.mine.zpool.ca:3737 -u $WALLET -p [c=BTC] -b 4068
+	./ccminer -a x17 -o stratum+tcp://x17.mine.zergpool.com:3737 -u $WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-lyra2z" ]]; then
-	./ccminer -a lyra2z -o stratum+tcp://lyra2z.mine.zpool.ca:4553 -u $WALLET -p [c=BTC] -b 4068
+	./ccminer -a lyra2z -o stratum+tcp://lyra2z.mine.zergpool.com:4553 -u $WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-decred" ]]; then
@@ -90,7 +90,7 @@ if [[ $1 = "-nicehash-blake14r" ]]; then
 fi
 
 if [[ $1 = "-blake2s" ]]; then
-	./ccminer -a blake2s -o stratum+tcp://blake2s.mine.zpool.ca:5766 -u $WALLET -p [c=BTC] -b 4068
+	./ccminer -a blake2s -o stratum+tcp://blake2s.mine.zergpool.com:5766 -u $WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-blake14r" ]]; then
@@ -114,7 +114,7 @@ if [[ $1 = "-nicehash-lbry" ]]; then
 fi
 
 if [[ $1 = "-xevan" ]]; then
-	./ccminer-xevan -a xevan -o stratum+tcp://blake2s.mine.zpool.ca:3739 -u $WALLET -p [c=BTC] -b 4068
+	./ccminer-xevan -a xevan -o stratum+tcp://blake2s.mine.zergpool.com:3739 -u $WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-phi1612" ]]; then
