@@ -55,6 +55,8 @@ def maintenance():
 		ret = main.profit_switch(force_switch = restart_flag)
 		main.maintenance_ts = time.time()
 
+	return None
+
 scheduler = BackgroundScheduler()
 scheduler.start()
 scheduler.add_job(
