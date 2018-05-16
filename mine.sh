@@ -35,7 +35,7 @@ if [[ $1 = "-equihash-ccminer" ]]; then
 fi
 
 if [[ $1 = "-equihash" ]]; then
-	./ewbf_miner --server zec.2miners.com --user t1emzuNbemjqnEhEue74NL3BxsR4cA1ajfP.$WORKER_NAME --pass x --port 1010 --api 0.0.0.0:4068
+	./ewbf_miner --server zec.2miners.com --user $EQUIHASH_WALLET.$WORKER_NAME --pass x --port 1010 --api 0.0.0.0:4068
 fi
 
 if [[ $1 = "-nicehash-equihash" ]]; then
