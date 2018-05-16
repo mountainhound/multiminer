@@ -70,6 +70,14 @@ scheduler.add_job(
 # Shut down the scheduler when exiting the app
 atexit.register(lambda: scheduler.shutdown())
 
+def sigint_handler(signum, frame):
+	print ("Please Wait Stopping The Miners")
+	main.stop_mining()
+	time.sleep(.5)
+	sys.exit()
+ 
+signal.signal(signal.SIGINT, sigint_handler)
+
 @app.route('/profit_switch', methods=['GET'])
 def profit_switch():
 	ret = main.profit_switch()
@@ -98,7 +106,7 @@ def mining_mode():
 		main.profit_flag = False
 		main.stop_flag = True
 	elif mode.strip().lower():
-		if mode in main.ccminer_algos or main.ethash_algos:
+		if mode in main.ccminer_algos or mode in main.ethash_algos or mode in main.ewbf_algos:
 			ret = main.set_mining_mode(mode)
 			main.stop_flag = False
 			main.profit_flag = False
@@ -130,6 +138,7 @@ class multiminer():
 		self.app = app
 		self.ccminer_algos = settings.ccminer_algos
 		self.ethash_algos = settings.ethash_algos
+		self.ewbf_algos = settings.ewbf_algos
 		self.profit_flag = settings.profit_flag
 		self.runningProcess = None
 		self.profit_api = ProfitCoin()
@@ -158,7 +167,7 @@ class multiminer():
 					algo = coin.get('algorithm').lower().replace(" ","").replace("(","").replace(")","")
 					coin = coin.get('coin').lower().replace(" ","").replace("(","").replace(")","")
 
-					if algo in self.ccminer_algos or algo in self.ethash_algos: 
+					if algo in self.ccminer_algos or algo in self.ethash_algos or algo in self.ewbf_algos: 
 						if not profit_algo and not profit_coin:
 							profit_algo = algo
 							profit_coin = coin
@@ -283,6 +292,18 @@ class multiminer():
 			return False
 			print ("ERROR IN TELNET")
 
+	def ewbf_api_output(self):
+		try: 
+			data = None
+			ret = requests.get("http://localhost:4068/getstat")
+			if ret.status_code == 200: 
+				output = ret.json()	
+			print (output)
+			return output
+		except:
+			return False
+			print ("ERROR IN EWBF HTTP POST")
+
 	def ethash_api_output(self):
 		try:
 			print ("ETHASH API OUTPUT")
@@ -361,6 +382,30 @@ class multiminer():
 				stat_dict['gpus'] = gpu_hashrates
 				stat_dict['algo'] = "ethash"
 				stat_dict['shares_accepted'] = output[1]
+
+		if self.current_algo in self.ewbf_algos:
+			output =  self.ewbf_api_output()
+			if output: 
+				gpu_list = output.get('result')
+				stat_dict['current_miner'] = 'ewbf_0.3.4b'
+				stat_dict['current_server'] = output.get('current_server')
+				if gpu_list: 
+					stat_dict['gpu_num'] = len(gpu_list)
+					stat_dict['gpus'] = []
+					for gpu in gpu_list: 
+						if not stat_dict.get('shares_accepted'):
+							stat_dict['shares_accepted'] = gpu.get('accepted_shares')
+							stat_dict['shares_rejected'] = gpu.get('rejected_shares')
+							stat_dict['hashrate'] = gpu.get('speed_sps')
+						else:
+							stat_dict['shares_accepted'] += gpu.get('accepted_shares')
+							stat_dict['shares_rejected'] += gpu.get('rejected_shares')
+							stat_dict['hashrate'] += gpu.get('speed_sps')
+
+						stat_dict['hashrate_unit'] = "S/S"
+						stat_dict['gpus'].append(gpu.get('speed_sps'))
+						stat_dict['algo'] = "equihash"
+
 
 		temp_list = self.nvidia_temp_output()
 		stat_dict['temps'] = temp_list

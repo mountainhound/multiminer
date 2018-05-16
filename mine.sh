@@ -12,7 +12,7 @@ EQUIHASH_WALLET=t1NKe7ayhDZijC1TzNLfd5gPTBfbbU1Ktyg #Kraken ZCash
 #NICEHASH_WALLET=3C2686TfBdgJsLN3ibPQcpGysbnB4VdYgr #Grant-Nicehash
 #ETHASH_WALLET=0x333b5748538B03362f70A1be261599eD963925dC #Parker-Eth
 
-WORKER_NAME=devmachine
+WORKER_NAME=default_changeme
 
 export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64:$LD_LIBRARY_PATH
 export PATH=/usr/local/cuda-8.0/bin:$PATH
@@ -30,8 +30,12 @@ if [[ $1 = "-nicehash-lyra2rev2" ]]; then
 	./ccminer -a lyra2v2 -o stratum+tcp://lyra2rev2.usa.nicehash.com:3347 -u $NICEHASH_WALLET	-p [c=BTC] -b 4068
 fi
 
-if [[ $1 = "-equihash" ]]; then
+if [[ $1 = "-equihash-ccminer" ]]; then
 	./ccminer -a equihash -o stratum+tcp://zec.2miners.com:1010 -u $EQUIHASH_WALLET -p [c=BTC] -b 4068
+fi
+
+if [[ $1 = "-equihash" ]]; then
+	./ewbf_miner --server zec.2miners.com --user t1emzuNbemjqnEhEue74NL3BxsR4cA1ajfP.$WORKER_NAME --pass x --port 1010 --api 0.0.0.0:4068
 fi
 
 if [[ $1 = "-nicehash-equihash" ]]; then
@@ -39,7 +43,7 @@ if [[ $1 = "-nicehash-equihash" ]]; then
 fi
 
 if [[ $1 = "-ethash" ]]; then
-	./ethminer -U -S eth-us-east1.nanopool.org:9999 -O $ETHASH_WALLET.dev-machine --farm-recheck 200 --api-port 4068
+	./ethminer -U -S eth-us-east1.nanopool.org:9999 -O $ETHASH_WALLET.$WORKER_NAME --farm-recheck 200 --api-port 4068
 fi
 
 if [[ $1 = "-ubiq" ]]; then
