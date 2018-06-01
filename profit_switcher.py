@@ -31,7 +31,7 @@ def auto_profit_switch():
 def maintenance():
 	stats = main.get_miner_stats()
 	maintenance_stats = main.maintenance_stats
-	maintenance_ts = main.maintenance_ts
+	profit_ts = main.profit_ts
 	restart_flag = False
 	if stats: 
 		hashrate = stats.get('hashrate')
@@ -51,9 +51,9 @@ def maintenance():
 
 	main.maintenance_stats = stats
 
-	if not maintenance_ts or ((time.time() - maintenance_ts) >= (settings.profit_interval*60)) or restart_flag:
+	if not profit_ts or ((time.time() - profit_ts) >= (settings.profit_interval*60)) or restart_flag:
 		ret = main.profit_switch(force_switch = restart_flag)
-		main.maintenance_ts = time.time()
+		main.profit_ts = time.time()
 
 	return None
 
@@ -133,7 +133,7 @@ class multiminer():
 	def __init__(self,app):
 		print ("INIT")
 		self.maintenance_stats = None
-		self.maintenance_ts = 0
+		self.profit_ts = 0
 		self.setting_path = 'conf.json'
 		self.app = app
 		self.ccminer_algos = settings.ccminer_algos
@@ -278,9 +278,9 @@ class multiminer():
 			print ("NVIDIA TEMP TIMED OUT")
 			return None
 
-	def ccminer_api_output(self,command = b"summary"):
+	def ccminer_api_output(self,url = "localhost",port = "4068", command = b"summary"):
 		try: 
-			tn = Telnet("localhost","4068")
+			tn = Telnet(url,port)
 			tn.write(command)
 			output = tn.read_all().decode("utf-8")
 			tn.write(b"^]")
@@ -289,27 +289,27 @@ class multiminer():
 			print (output)
 			return output
 		except:
-			return False
 			print ("ERROR IN TELNET")
+			return False
 
-	def ewbf_api_output(self):
+	def ewbf_api_output(self,url = "localhost",port = "4068", command = "getstat"):
 		try: 
 			data = None
-			ret = requests.get("http://localhost:4068/getstat")
+			ret = requests.get("http://{}:{}/{}".format(url,port,command))
 			if ret.status_code == 200: 
 				output = ret.json()	
 			print (output)
 			return output
 		except:
-			return False
 			print ("ERROR IN EWBF HTTP POST")
+			return False
 
-	def ethash_api_output(self):
+	def ethash_api_output(self,url = "localhost",port = "4068", command = "miner_getstat1"):
 		try:
 			print ("ETHASH API OUTPUT")
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			s.connect(('localhost', 4068))
-			s.sendall('{"id":0,"jsonrpc":"2.0","method":"miner_getstat1"}\n'.encode('utf-8'))
+			s.connect((url, port))
+			s.sendall('{"id":0,"jsonrpc":"2.0","method":{}}\n'.format(command).encode('utf-8'))
 			resp = ''
 			while 1:
 				data = s.recv(4096)
@@ -349,26 +349,48 @@ class multiminer():
 	def get_miner_stats(self):
 		stat_dict = {}
 		if self.current_algo in self.ccminer_algos:
-			output =  self.ccminer_api_output()
-			if output:
-				output = output.replace(";",",")
-				output = output.replace("=",":")
-				output = output.split(",")
-				print (output)
+			threads_output = ccminer_api_output(command = b"threads",url = "localhost")
+			if threads_output:
+				threads_dict = {}
+				threads_list = threads_output.split("|")
+				del threads_list[-1]
+				for x,gpu_output in enumerate(threads_list): 
+					gpu_list = gpu_output.split(";")
+					for i,stat in enumerate(gpu_list): 
+						gpu_list[i] = stat.split("=")
+					threads_dict[x] = dict(gpu_list)
 
-				version = output[1][4:]
+				temp_dict = {}
+				gpu_hash_dict = {}
+				for key,value in threads_dict.items():
+					temp_dict[key] = value.get('TEMP')
+					gpu_hash_dict[key] = value.get('KHS')
+
+				stat_dict['temps'] = temp_dict
+				stat_dict['gpus'] = gpu_hash_dict
+
+			summary_output = ccminer_api_output(command = b"summary",url = "localhost")
+			if summary_output:	
+				summary_list = summary_output.replace("|","").split(";")
+
+				for i,stat in enumerate(summary_list):
+					summary_list[i] = stat.split("=")
+
+				summary_dict = dict(summary_list)
+
+				version = summary_dict.get('VER')
 				stat_dict['current_miner'] = 'ccminer_{}'.format(version)
-				stat_dict['hashrate'] = float(output[5][4:])
-				stat_dict['hashrate_unit'] = output[5][:3]
-				stat_dict['gpu_num'] = int(output[4][5:])
-				stat_dict['algo'] = output[3][5:]
-				stat_dict['shares_accepted'] = int(output[7][4:])
-				stat_dict['shares_rejected'] = int(output[8][4:])
-				stat_dict['uptime'] = int(output[14][7:])
-				stat_dict['difficulty'] = float(output[10][5:])
+				stat_dict['hashrate'] = summary_dict.get('KHS')
+				stat_dict['hashrate_unit'] = 'KHS'
+				stat_dict['gpu_num'] = summary_dict.get('GPUS')
 
-				thread_output =  self.ccminer_api_output()
-				thread_output = thread_output.split(";")
+				stat_dict['algo'] = summary_dict.get('ALGO')
+				stat_dict['shares_accepted'] = summary_dict.get('ACC')
+				stat_dict['shares_rejected'] = summary_dict.get('REJ')
+				stat_dict['uptime'] = summary_dict.get('UPTIME')
+				stat_dict['difficulty'] = summary_dict.get('DIFF')
+
+				print (stat_dict)
 
 		if self.current_algo in self.ethash_algos:
 			output =  self.ethash_api_output()
@@ -378,10 +400,22 @@ class multiminer():
 				stat_dict['current_miner'] = 'ethminer_{}'.format(version)
 				stat_dict['hashrate'] = output[2].split(";")[0]
 				stat_dict['hashrate_unit'] = "KHS"
+				stat_dict['current_server'] = output[7]
 				stat_dict['gpu_num'] = len(gpu_hashrates)
-				stat_dict['gpus'] = gpu_hashrates
 				stat_dict['algo'] = "ethash"
 				stat_dict['shares_accepted'] = output[1]
+
+				gpu_hash_dict = {}
+				temp_dict = {}
+
+				for i,gpu_hash in enumerate(gpu_hashrates):
+					gpu_hash_dict[i] = gpu_hash
+
+				for i,temp in enumerate(output[6].split("; ")):
+					temp_dict[i] = temp.split(";")[0]
+
+				stat_dict['temps'] = temp_dict
+				stat_dict['gpus'] = gpu_hash_dict
 
 		if self.current_algo in self.ewbf_algos:
 			output =  self.ewbf_api_output()
@@ -391,8 +425,9 @@ class multiminer():
 				stat_dict['current_server'] = output.get('current_server')
 				if gpu_list: 
 					stat_dict['gpu_num'] = len(gpu_list)
-					stat_dict['gpus'] = []
-					for gpu in gpu_list: 
+					stat_dict['gpus'] = {}
+					stat_dict['temps'] = {}
+					for i,gpu in enumerate(gpu_list): 
 						if not stat_dict.get('shares_accepted'):
 							stat_dict['shares_accepted'] = gpu.get('accepted_shares')
 							stat_dict['shares_rejected'] = gpu.get('rejected_shares')
@@ -403,13 +438,10 @@ class multiminer():
 							stat_dict['hashrate'] += gpu.get('speed_sps')
 
 						stat_dict['hashrate_unit'] = "S/S"
-						stat_dict['gpus'].append(gpu.get('speed_sps'))
+						stat_dict['gpus'][i] = gpu.get('speed_sps')
+						stat_dict['temps'][i] = gpu.get('temperature')
 						stat_dict['algo'] = "equihash"
 
-
-		temp_list = self.nvidia_temp_output()
-		stat_dict['temps'] = temp_list
-		
 		return stat_dict
 
 	def run(self):
