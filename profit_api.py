@@ -46,7 +46,7 @@ class ProfitCoin(object):
         url_opener = urllib2.build_opener()
         url_opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
         try:
-            response = url_opener.open(url)
+            response = url_opener.open(url, timeout = 1)
             string = response.read().decode('utf-8')
             json_obj = json.loads(string)
         except:
