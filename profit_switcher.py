@@ -304,11 +304,11 @@ class multiminer():
 			print ("ERROR IN EWBF HTTP POST")
 			return False
 
-	def ethash_api_output(self,url = "localhost",port = "4068", command = "miner_getstat1"):
+	def ethash_api_output(self,url = "localhost",port = 4068, command = "miner_getstat1"):
 		try:
 			print ("ETHASH API OUTPUT")
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			s.connect((url, port))
+			s.connect((url, int(port)))
 			s.sendall('{"id":0,"jsonrpc":"2.0","method":{}}\n'.format(command).encode('utf-8'))
 			resp = ''
 			while 1:
