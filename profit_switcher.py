@@ -349,7 +349,7 @@ class multiminer():
 	def get_miner_stats(self):
 		stat_dict = {}
 		if self.current_algo in self.ccminer_algos:
-			threads_output = ccminer_api_output(command = b"threads",url = "localhost")
+			threads_output = self.ccminer_api_output(command = b"threads",url = "localhost")
 			if threads_output:
 				threads_dict = {}
 				threads_list = threads_output.split("|")
@@ -369,7 +369,7 @@ class multiminer():
 				stat_dict['temps'] = temp_dict
 				stat_dict['gpus'] = gpu_hash_dict
 
-			summary_output = ccminer_api_output(command = b"summary",url = "localhost")
+			summary_output = self.ccminer_api_output(command = b"summary",url = "localhost")
 			if summary_output:	
 				summary_list = summary_output.replace("|","").split(";")
 
