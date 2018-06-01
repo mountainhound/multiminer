@@ -2,8 +2,14 @@ import socket
 import json
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(('10.8.0.101', 4068))
-s.sendall('{"id":0,"jsonrpc":"2.0","method":"miner_getstat1"}\n'.encode('utf-8'))
+s.settimeout(5)
+s.connect(('10.8.0.101', int(4068)))
+#sock.settimeout(None)
+command = "miner_getstat1"
+message = json.dumps({"id":0,"jsonrpc":"2.0","method":command}) + "\n"
+print (type(message))
+print (message)
+s.sendall(message.encode('utf-8'))
 resp = ''
 while 1:
      data = s.recv(4096)

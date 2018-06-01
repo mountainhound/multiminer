@@ -308,8 +308,9 @@ class multiminer():
 		try:
 			print ("ETHASH API OUTPUT")
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			s.settimeout(5)
 			s.connect((url, int(port)))
-			message = '{"id":0,"jsonrpc":"2.0","method":{}}\n'.format(command)
+			message = json.dumps({"id":0,"jsonrpc":"2.0","method":command}) + "\n"
 			s.sendall(message.encode('utf-8'))
 			resp = ''
 			while 1:
