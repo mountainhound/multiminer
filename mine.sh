@@ -27,7 +27,7 @@ if [[ $1 = "-lyra2rev2" ]]; then
 fi
 
 if [[ $1 = "-nicehash-lyra2rev2" ]]; then
-	./ccminer -a lyra2v2 -o stratum+tcp://lyra2rev2.usa.nicehash.com:3347 -u $NICEHASH_WALLET	-p [c=BTC] -b 4068
+	./ccminer-xevan -a lyra2v2 -o stratum+tcp://lyra2rev2.usa.nicehash.com:3347 -u $NICEHASH_WALLET	-p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-equihash-ccminer" ]]; then
@@ -123,7 +123,7 @@ if [[ $1 = "-xevan" ]]; then
 fi
 
 if [[ $1 = "-phi1612" ]]; then
-	./ccminer -a phi -o stratum+tcp://phi.mine.zergpool.com:8333 -u $WALLET -p [c=BTC] -b 4068
+	./ccminer-phi -a phi -o stratum+tcp://phi.mine.zergpool.com:8333 -u $WALLET -p [c=BTC] -b 4068
 fi
 
 if [[ $1 = "-timetravel10" ]]; then

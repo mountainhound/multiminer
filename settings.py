@@ -8,7 +8,7 @@ ethash_algos = ["ethash","nicehash-ethash"]
 
 profit_flag = False
 
-default = "equihash"
+default = "phi1612"
 
 profit_interval = 60 #minutes
 maintenance_interval = 5 #minutes
