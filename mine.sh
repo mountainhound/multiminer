@@ -27,7 +27,7 @@ if [[ $1 = "-lyra2rev2" ]]; then
 fi
 
 if [[ $1 = "-nicehash-lyra2rev2" ]]; then
-	./ccminer-xevan -a lyra2v2 -o stratum+tcp://lyra2rev2.usa.nicehash.com:3347 -u $NICEHASH_WALLET	-p [$WORKER_NAME,c=BTC] -b 4068
+	./ccminer-xevan -a lyra2v2 -o stratum+tcp://lyra2rev2.usa.nicehash.com:3347 -u $NICEHASH_WALLET.$WORKER_NAME -b 4068
 fi
 
 if [[ $1 = "-equihash-ccminer" ]]; then
@@ -39,7 +39,7 @@ if [[ $1 = "-equihash" ]]; then
 fi
 
 if [[ $1 = "-nicehash-equihash" ]]; then
-	./ccminer -a equihash -o stratum+tcp://equihash.usa.nicehash.com:3357 -u $NICEHASH_WALLET -p [$WORKER_NAME,c=BTC] -b 4068
+	./ccminer -a equihash -o stratum+tcp://equihash.usa.nicehash.com:3357 -u $NICEHASH_WALLET.$WORKER_NAME -b 4068
 fi
 
 if [[ $1 = "-ethash" ]]; then
@@ -51,7 +51,7 @@ if [[ $1 = "-ubiq" ]]; then
 fi
 
 if [[ $1 = "-nicehash-ethash" ]]; then
-	./ethminer -SP 2 -U -S daggerhashimoto.usa.nicehash.com:3353 -O $NICEHASH_WALLET --farm-recheck 200 --api-port 4068
+	./ethminer -SP 2 -U -S daggerhashimoto.usa.nicehash.com:3353 -O $NICEHASH_WALLET.$WORKER_NAME --farm-recheck 200 --api-port 4068
 fi
 
 if [[ $1 = "-neoscrypt" ]]; then
@@ -59,7 +59,7 @@ if [[ $1 = "-neoscrypt" ]]; then
 fi
 
 if [[ $1 = "-nicehash-neoscrypt" ]]; then
-	./ccminer -a neoscrypt -o stratum+tcp://neoscrypt.usa.nicehash.com:3341 -u $NICEHASH_WALLET -p [$WORKER_NAME,c=BTC] -b 4068
+	./ccminer -a neoscrypt -o stratum+tcp://neoscrypt.usa.nicehash.com:3341 -u $NICEHASH_WALLET.$WORKER_NAME -b 4068
 fi
 
 if [[ $1 = "-scrypt" ]]; then
@@ -71,7 +71,7 @@ if [[ $1 = "-x11gost" ]]; then
 fi
 
 if [[ $1 = "-nicehash-x11gost" ]]; then
-	./ccminer -o stratum+tcp://x11gost.usa.nicehash.com:3359 -u $NICEHASH_WALLET -p [$WORKER_NAME,c=BTC] -b 4068
+	./ccminer -o stratum+tcp://x11gost.usa.nicehash.com:3359 -u $NICEHASH_WALLET.$WORKER_NAME -b 4068
 fi
 
 if [[ $1 = "-x17" ]]; then
@@ -87,11 +87,11 @@ if [[ $1 = "-decred" ]]; then
 fi
 
 if [[ $1 = "-nicehash-decred" ]]; then
-	./ccminer -a decred -o stratum+tcp://decred.usa.nicehash.com:3354 -u $NICEHASH_WALLET -b 4068
+	./ccminer -a decred -o stratum+tcp://decred.usa.nicehash.com:3354 -u $NICEHASH_WALLET.$WORKER_NAME -b 4068
 fi
 
 if [[ $1 = "-nicehash-blake14r" ]]; then
-	./ccminer -a decred -o stratum+tcp://decred.usa.nicehash.com:3354 -u $NICEHASH_WALLET -b 4068
+	./ccminer -a decred -o stratum+tcp://decred.usa.nicehash.com:3354 -u $NICEHASH_WALLET.$WORKER_NAME -b 4068
 fi
 
 if [[ $1 = "-blake2s" ]]; then
@@ -107,7 +107,7 @@ if [[ $1 = "-nist5" ]]; then
 fi
 
 if [[ $1 = "-nicehash-nist5" ]]; then
-	./ccminer -a nist5 -o stratum+tcp://nist5.usa.nicehash.com:3340 -u $NICEHASH_WALLET -p [$WORKER_NAME,c=BTC] -b 4068
+	./ccminer -a nist5 -o stratum+tcp://nist5.usa.nicehash.com:3340 -u $NICEHASH_WALLET.$WORKER_NAME -b 4068
 fi
 
 if [[ $1 = "-lbry" ]]; then
@@ -115,7 +115,7 @@ if [[ $1 = "-lbry" ]]; then
 fi
 
 if [[ $1 = "-nicehash-lbry" ]]; then
-	./ccminer -a lbry -o stratum+tcp://lbry.usa.nicehash.com:3356 -u $NICEHASH_WALLET -p [$WORKER_NAME,c=BTC] -b 4068
+	./ccminer -a lbry -o stratum+tcp://lbry.usa.nicehash.com:3356 -u $NICEHASH_WALLET.$WORKER_NAME -b 4068
 fi
 
 if [[ $1 = "-xevan" ]]; then
