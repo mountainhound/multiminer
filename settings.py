@@ -8,7 +8,7 @@ ethash_algos = ["ethash","nicehash-ethash"]
 
 profit_flag = False
 
-default = "lyra2rev2"
+default = "nicehash-lyra2rev2"
 
 profit_interval = 60 #minutes
 maintenance_interval = 5 #minutes
