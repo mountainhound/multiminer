@@ -38,12 +38,12 @@ def maintenance():
 		algo = stats.get('algo')
 
 		if hashrate == 0: 
-			print ("Miner appears to be hung.. hashrate is 0 forcing algo change")
+			print ("Miner appears to be hung.. hashrate is 0 forcing restart")
 			restart_flag = True
 		
 		if maintenance_stats: 
 			if algo == maintenance_stats.get('algo') and stats.get('shares_accepted') == maintenance_stats.get('shares_accepted'):
-				print ("Miner appears to be hung.. No shares in 2 minutes forcing algo change")
+				print ("Miner appears to be hung.. No shares in {} minutes forcing restart".format(settings.maintenance_interval))
 				restart_flag = True
 	else: 
 		print ("Miner not returning stats forcing algo change")
@@ -52,8 +52,10 @@ def maintenance():
 	main.maintenance_stats = stats
 
 	if not profit_ts or ((time.time() - profit_ts) >= (settings.profit_interval*60)) or restart_flag:
-		ret = main.profit_switch(force_switch = restart_flag)
+		ret = main.profit_switch()
 		main.profit_ts = time.time()
+		if restart_flag:
+			main.miner_restart()
 
 	return None
 
@@ -190,6 +192,26 @@ class multiminer():
 				return ("NO ALGO FOUND")
 		print ("Mode is not auto")
 		return ("mode is not auto")
+
+	def miner_restart(self):
+		ret = 0
+		if self.runningProcess:
+			ret = self.stop_mining()
+
+		time.sleep(1)
+
+		if ret < 0 or self.runningProcess is None:
+			cmd = './mine.sh -{}'.format(self.current_algo)
+			
+			self.runningProcess=subprocess.Popen(cmd.split(),stdout=subprocess.PIPE,stderr=subprocess.STDOUT,bufsize=1)
+			
+			time.sleep(1)
+			t = Thread(target=self.output_reader, args=(self.runningProcess, self.output_q))
+			t.start()
+			
+			print ('restarting miner')
+		
+		return "Mining Mode Set To {}".format(self.current_algo)
 
 	def output_reader(self,proc, output_q):
 		for line in iter(proc.stdout.readline, b''):
