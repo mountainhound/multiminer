@@ -17,7 +17,8 @@ nicehash_algos = {0:"Scrypt",1:"SHA256",2 :"ScryptNf",3:"X11",4:"X13",5:'Keccak'
 
 #1080ti
 hashrates = {'NeoScrypt':.0014,'Lyra2REv2':.064,'Equihash':.000000685,'CryptoNightV7':.000000830,'CryptoNight':.00000083,
-                        'X11Gost':.0195,'DaggerHashimoto':.046,'Nist5':.075,'Skunk':.0475,'Pascal':1.7,'Lbry':.475,'Decred':4.35}
+                        'X11Gost':.0195,'DaggerHashimoto':.046,'Nist5':.075,'Skunk':.0475,
+                        'Pascal':1.7,'Lbry':.475,'Decred':4.35}
 
 SRC_META = {
     'whattomine': {
